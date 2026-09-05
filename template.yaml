@@ -1,0 +1,75 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: FinDocQA -- LLM failure-mode detection API for SEC filing QA
+
+Parameters:
+  AnthropicApiKeySecretArn:
+    Type: String
+    Description: >
+      ARN of a Secrets Manager secret holding ANTHROPIC_API_KEY.
+      Without this, the service still runs using the extractive fallback
+      already built into app/main.py -- no code change needed either way.
+    Default: ""
+
+  EnableBedrockJudge:
+    Type: String
+    AllowedValues: ["true", "false"]
+    Default: "true"
+
+  BedrockJudgeModelId:
+    Type: String
+    Default: "us.amazon.nova-lite-v1:0"
+
+Conditions:
+  HasSecretArn: !Not [!Equals [!Ref AnthropicApiKeySecretArn, ""]]
+  UseBedrockJudge: !Equals [!Ref EnableBedrockJudge, "true"]
+
+Resources:
+  FinDocQAFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      Timeout: 30
+      MemorySize: 3008
+      Environment:
+        Variables:
+          FINDOCQA_LOG_DIR: /tmp/findocqa/logs
+          HF_HOME: /tmp/hf_cache
+          TRANSFORMERS_CACHE: /tmp/hf_cache
+          SENTENCE_TRANSFORMERS_HOME: /tmp/hf_cache
+          ENABLE_BEDROCK_JUDGE: !Ref EnableBedrockJudge
+          BEDROCK_JUDGE_MODEL_ID: !Ref BedrockJudgeModelId
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+      Policies:
+        - !If
+          - HasSecretArn
+          - Statement:
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource: !Ref AnthropicApiKeySecretArn
+          - !Ref "AWS::NoValue"
+        - !If
+          - UseBedrockJudge
+          - Statement:
+              - Effect: Allow
+                Action:
+                  - bedrock:InvokeModel
+                Resource:
+                  - !Sub "arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/${BedrockJudgeModelId}"
+                  - "arn:aws:bedrock:*::foundation-model/amazon.nova-lite-v1:0"
+          - !Ref "AWS::NoValue"
+    Metadata:
+      DockerTag: findocqa-latest
+      DockerContext: .
+      Dockerfile: Dockerfile
+
+Outputs:
+  ApiUrl:
+    Description: Public FinDocQA endpoint
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"

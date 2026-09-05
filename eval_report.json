@@ -1,0 +1,248 @@
+{
+  "dataset": "data\\eval_benchmark.jsonl",
+  "dataset_type": "curated synthetic SEC-style benchmark",
+  "judge_enabled": true,
+  "records_evaluated": 60,
+  "exact_match_accuracy": 0.6667,
+  "micro_precision": 0.75,
+  "micro_recall": 1.0,
+  "micro_f1": 0.8571,
+  "per_category": {
+    "citation_gap": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 10
+    },
+    "numeric_hallucination": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 10
+    },
+    "period_mismatch": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 10
+    },
+    "retrieval_miss": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 10
+    },
+    "unsupported_claim": {
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6667,
+      "support": 20
+    }
+  },
+  "latency_ms": {
+    "p50": 678.47,
+    "p95": 824.01
+  },
+  "mismatches": [
+    {
+      "id": "numeric-hallucination-00",
+      "expected": [
+        "numeric_hallucination"
+      ],
+      "predicted": [
+        "numeric_hallucination",
+        "unsupported_claim"
+      ]
+    },
+    {
+      "id": "period-mismatch-00",
+      "expected": [
+        "period_mismatch"
+      ],
+      "predicted": [
+        "period_mismatch",
+        "unsupported_claim"
+      ]
+    },
+    {
+      "id": "numeric-hallucination-01",
+      "expected": [
+        "numeric_hallucination"
+      ],
+      "predicted": [
+        "numeric_hallucination",
+        "unsupported_claim"
+      ]
+    },
+    {
+      "id": "period-mismatch-01",
+      "expected": [
+        "period_mismatch"
+      ],
+      "predicted": [
+        "period_mismatch",
+        "unsupported_claim"
+      ]
+    },
+    {
+      "id": "numeric-hallucination-02",
+      "expected": [
+        "numeric_hallucination"
+      ],
+      "predicted": [
+        "numeric_hallucination",
+        "unsupported_claim"
+      ]
+    },
+    {
+      "id": "period-mismatch-02",
+      "expected": [
+        "period_mismatch"
+      ],
+      "predicted": [
+        "period_mismatch",
+        "unsupported_claim"
+      ]
+    },
+    {
+      "id": "numeric-hallucination-03",
+      "expected": [
+        "numeric_hallucination"
+      ],
+      "predicted": [
+        "numeric_hallucination",
+        "unsupported_claim"
+      ]
+    },
+    {
+      "id": "period-mismatch-03",
+      "expected": [
+        "period_mismatch"
+      ],
+      "predicted": [
+        "period_mismatch",
+        "unsupported_claim"
+      ]
+    },
+    {
+      "id": "numeric-hallucination-04",
+      "expected": [
+        "numeric_hallucination"
+      ],
+      "predicted": [
+        "numeric_hallucination",
+        "unsupported_claim"
+      ]
+    },
+    {
+      "id": "period-mismatch-04",
+      "expected": [
+        "period_mismatch"
+      ],
+      "predicted": [
+        "period_mismatch",
+        "unsupported_claim"
+      ]
+    },
+    {
+      "id": "numeric-hallucination-05",
+      "expected": [
+        "numeric_hallucination"
+      ],
+      "predicted": [
+        "numeric_hallucination",
+        "unsupported_claim"
+      ]
+    },
+    {
+      "id": "period-mismatch-05",
+      "expected": [
+        "period_mismatch"
+      ],
+      "predicted": [
+        "period_mismatch",
+        "unsupported_claim"
+      ]
+    },
+    {
+      "id": "numeric-hallucination-06",
+      "expected": [
+        "numeric_hallucination"
+      ],
+      "predicted": [
+        "numeric_hallucination",
+        "unsupported_claim"
+      ]
+    },
+    {
+      "id": "period-mismatch-06",
+      "expected": [
+        "period_mismatch"
+      ],
+      "predicted": [
+        "period_mismatch",
+        "unsupported_claim"
+      ]
+    },
+    {
+      "id": "numeric-hallucination-07",
+      "expected": [
+        "numeric_hallucination"
+      ],
+      "predicted": [
+        "numeric_hallucination",
+        "unsupported_claim"
+      ]
+    },
+    {
+      "id": "period-mismatch-07",
+      "expected": [
+        "period_mismatch"
+      ],
+      "predicted": [
+        "period_mismatch",
+        "unsupported_claim"
+      ]
+    },
+    {
+      "id": "numeric-hallucination-08",
+      "expected": [
+        "numeric_hallucination"
+      ],
+      "predicted": [
+        "numeric_hallucination",
+        "unsupported_claim"
+      ]
+    },
+    {
+      "id": "period-mismatch-08",
+      "expected": [
+        "period_mismatch"
+      ],
+      "predicted": [
+        "period_mismatch",
+        "unsupported_claim"
+      ]
+    },
+    {
+      "id": "numeric-hallucination-09",
+      "expected": [
+        "numeric_hallucination"
+      ],
+      "predicted": [
+        "numeric_hallucination",
+        "unsupported_claim"
+      ]
+    },
+    {
+      "id": "period-mismatch-09",
+      "expected": [
+        "period_mismatch"
+      ],
+      "predicted": [
+        "period_mismatch",
+        "unsupported_claim"
+      ]
+    }
+  ]
+}
