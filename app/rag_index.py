@@ -9,6 +9,7 @@ retrieval sophistication.
 """
 
 import json
+from dataclasses import asdict
 import logging
 from pathlib import Path
 
@@ -103,7 +104,7 @@ class FilingIndex:
         Path(path).mkdir(parents=True, exist_ok=True)
         faiss.write_index(self.index, f"{path}/index.faiss")
         with open(f"{path}/chunks.json", "w") as f:
-            json.dump([c.__dict__ for c in self.chunks], f)
+            json.dump([asdict(c) for c in self.chunks], f)
 
     def load(self, path: str = "data/faiss_index"):
         self.index = faiss.read_index(f"{path}/index.faiss")

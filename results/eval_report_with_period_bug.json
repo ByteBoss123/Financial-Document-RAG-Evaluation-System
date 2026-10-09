@@ -1,0 +1,218 @@
+{
+  "dataset": "data/eval_benchmark.jsonl",
+  "dataset_type": "curated synthetic SEC-style benchmark",
+  "judge_enabled": false,
+  "records_evaluated": 60,
+  "exact_match_accuracy": 0.6667,
+  "micro_precision": 0.6667,
+  "micro_recall": 1.0,
+  "micro_f1": 0.8,
+  "per_category": {
+    "citation_gap": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 10
+    },
+    "numeric_hallucination": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 10
+    },
+    "period_mismatch": {
+      "precision": 0.3333,
+      "recall": 1.0,
+      "f1": 0.5,
+      "support": 10
+    },
+    "retrieval_miss": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 10
+    },
+    "unsupported_claim": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+    }
+  },
+  "latency_ms": {
+    "p50": 0.02,
+    "p95": 0.05
+  },
+  "mismatches": [
+    {
+      "id": "clean-00",
+      "expected": [],
+      "predicted": [
+        "period_mismatch"
+      ]
+    },
+    {
+      "id": "numeric-hallucination-00",
+      "expected": [
+        "numeric_hallucination"
+      ],
+      "predicted": [
+        "numeric_hallucination",
+        "period_mismatch"
+      ]
+    },
+    {
+      "id": "clean-01",
+      "expected": [],
+      "predicted": [
+        "period_mismatch"
+      ]
+    },
+    {
+      "id": "numeric-hallucination-01",
+      "expected": [
+        "numeric_hallucination"
+      ],
+      "predicted": [
+        "numeric_hallucination",
+        "period_mismatch"
+      ]
+    },
+    {
+      "id": "clean-02",
+      "expected": [],
+      "predicted": [
+        "period_mismatch"
+      ]
+    },
+    {
+      "id": "numeric-hallucination-02",
+      "expected": [
+        "numeric_hallucination"
+      ],
+      "predicted": [
+        "numeric_hallucination",
+        "period_mismatch"
+      ]
+    },
+    {
+      "id": "clean-03",
+      "expected": [],
+      "predicted": [
+        "period_mismatch"
+      ]
+    },
+    {
+      "id": "numeric-hallucination-03",
+      "expected": [
+        "numeric_hallucination"
+      ],
+      "predicted": [
+        "numeric_hallucination",
+        "period_mismatch"
+      ]
+    },
+    {
+      "id": "clean-04",
+      "expected": [],
+      "predicted": [
+        "period_mismatch"
+      ]
+    },
+    {
+      "id": "numeric-hallucination-04",
+      "expected": [
+        "numeric_hallucination"
+      ],
+      "predicted": [
+        "numeric_hallucination",
+        "period_mismatch"
+      ]
+    },
+    {
+      "id": "clean-05",
+      "expected": [],
+      "predicted": [
+        "period_mismatch"
+      ]
+    },
+    {
+      "id": "numeric-hallucination-05",
+      "expected": [
+        "numeric_hallucination"
+      ],
+      "predicted": [
+        "numeric_hallucination",
+        "period_mismatch"
+      ]
+    },
+    {
+      "id": "clean-06",
+      "expected": [],
+      "predicted": [
+        "period_mismatch"
+      ]
+    },
+    {
+      "id": "numeric-hallucination-06",
+      "expected": [
+        "numeric_hallucination"
+      ],
+      "predicted": [
+        "numeric_hallucination",
+        "period_mismatch"
+      ]
+    },
+    {
+      "id": "clean-07",
+      "expected": [],
+      "predicted": [
+        "period_mismatch"
+      ]
+    },
+    {
+      "id": "numeric-hallucination-07",
+      "expected": [
+        "numeric_hallucination"
+      ],
+      "predicted": [
+        "numeric_hallucination",
+        "period_mismatch"
+      ]
+    },
+    {
+      "id": "clean-08",
+      "expected": [],
+      "predicted": [
+        "period_mismatch"
+      ]
+    },
+    {
+      "id": "numeric-hallucination-08",
+      "expected": [
+        "numeric_hallucination"
+      ],
+      "predicted": [
+        "numeric_hallucination",
+        "period_mismatch"
+      ]
+    },
+    {
+      "id": "clean-09",
+      "expected": [],
+      "predicted": [
+        "period_mismatch"
+      ]
+    },
+    {
+      "id": "numeric-hallucination-09",
+      "expected": [
+        "numeric_hallucination"
+      ],
+      "predicted": [
+        "numeric_hallucination",
+        "period_mismatch"
+      ]
+    }
+  ]
+}

@@ -24,6 +24,7 @@ from pydantic import BaseModel, Field
 
 from app.rag_index import FilingIndex
 from app.failure_detection import evaluate_response
+from app.answer_format import clip as _clip
 from app.observability import trace_request, load_logs
 from app.bedrock_judge import BedrockUnsupportedClaimJudge
 
@@ -70,6 +71,33 @@ class AskResponse(BaseModel):
     sources: list[dict]
 
 
+SYSTEM_PROMPT = (
+    "You are a financial document QA assistant. Answer ONLY using the provided source excerpts. "
+    "Always state which company and filing your answer comes from. If the excerpts don't contain "
+    "the answer, say so explicitly rather than guessing."
+)
+_bedrock_client = None
+
+
+def _bedrock_answer(question: str, context_block: str, model_id: str) -> str:
+    """Generate with Amazon Bedrock (Converse API), using the Lambda's IAM role; no API key needed."""
+    global _bedrock_client
+    try:
+        if _bedrock_client is None:
+            import boto3
+            _bedrock_client = boto3.client("bedrock-runtime", region_name=os.environ.get("AWS_REGION", "us-east-1"))
+        resp = _bedrock_client.converse(
+            modelId=model_id,
+            system=[{"text": SYSTEM_PROMPT}],
+            messages=[{"role": "user", "content": [{"text": f"Sources:\n{context_block}\n\nQuestion: {question}"}]}],
+            inferenceConfig={"maxTokens": 400, "temperature": 0},
+        )
+        return resp["output"]["message"]["content"][0]["text"]
+    except Exception as e:  # noqa: BLE001 - surface any provider error in the logged answer
+        logger.error(f"Bedrock generation failed: {e}")
+        return f"[generation error: {e}]"
+
+
 def generate_answer(question: str, context_chunks: list[tuple]) -> str:
     """
     Calls the Anthropic API to generate a grounded answer from retrieved
@@ -82,13 +110,17 @@ def generate_answer(question: str, context_chunks: list[tuple]) -> str:
         for c, _ in context_chunks
     )
 
+    bedrock_model = os.environ.get("BEDROCK_GENERATION_MODEL_ID")
+    if bedrock_model:
+        return _bedrock_answer(question, context_block, bedrock_model)
+
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         top_chunk = context_chunks[0][0]
         return (
             f"[NO API KEY SET -- extractive fallback] Based on {top_chunk.company}'s "
             f"{top_chunk.form_type} ({top_chunk.section_name} section): "
-            f"{top_chunk.text[:400]}..."
+            f"{_clip(top_chunk.text)}..."
         )
 
     try:

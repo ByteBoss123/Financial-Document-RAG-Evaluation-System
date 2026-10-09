@@ -42,9 +42,10 @@ specific evidence that triggered it, so the dashboard can show *why* a
 response was flagged, not just that it was.
 """
 
-import re
 import logging
+import re
 from dataclasses import dataclass, field
+from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 from enum import Enum
 
 logger = logging.getLogger("findocqa.failures")
@@ -56,6 +57,7 @@ class FailureCategory(str, Enum):
     RETRIEVAL_MISS = "retrieval_miss"
     UNSUPPORTED_CLAIM = "unsupported_claim"
     CITATION_GAP = "citation_gap"
+    ENTITY_MISMATCH = "entity_mismatch"
 
 
 class Severity(str, Enum):
@@ -109,6 +111,31 @@ HEDGE_PHRASES = [
 ]
 
 
+DATE_PATTERN = re.compile(r"\b(?:19|20)\d{2}-\d{1,2}-\d{1,2}\b|\b\d{1,2}/\d{1,2}/(?:19|20)\d{2}\b")
+SEC_FORM_PATTERN = re.compile(r"\b(?:10-K|10-Q|8-K|20-F|40-F|6-K|S-1)(?:/A)?\b", re.IGNORECASE)
+
+# Names a user may use for each indexed filer (the five CIKs in edgar_ingest.KNOWN_CIKS).
+COMPANY_ALIASES = {
+    "bgc": ["bgc"],
+    "jpmorgan": ["jpmorgan", "jp morgan", "jpmorganchase", "chase", "jpm"],
+    "goldman": ["goldman sachs", "goldman"],
+    "morgan stanley": ["morgan stanley"],
+    "ice": ["intercontinental exchange", "ice"],
+}
+
+
+def _companies_named(text: str) -> set[str]:
+    low = text.lower()
+    low = low.replace("morgan stanley", " \x00ms\x00 ")  # keep "morgan" in Morgan Stanley from matching JPMorgan aliases
+    found = {"morgan stanley"} if "\x00ms\x00" in low else set()
+    for key, aliases in COMPANY_ALIASES.items():
+        if key == "morgan stanley":
+            continue
+        if any(re.search(rf"\b{re.escape(a)}\b", low) for a in aliases):
+            found.add(key)
+    return found
+
+
 def _extract_numbers(text: str) -> set[str]:
     """
     Pull normalized numeric tokens out of text for cross-checking.
@@ -118,6 +145,10 @@ def _extract_numbers(text: str) -> set[str]:
     as a hallucinated number any time the year isn't phrased identically in
     the source text.
     """
+    # SEC form names ("10-K", "10-Q", "8-K") are document labels, not financial figures
+    text = SEC_FORM_PATTERN.sub(" ", text)
+    # calendar dates ("filed 2026-02-13", "12/31/2025") are citations, not financial figures
+    text = DATE_PATTERN.sub(" ", text)
     raw = NUMBER_PATTERN.findall(text)
     cleaned = set()
     for r in raw:
@@ -141,10 +172,40 @@ def _extract_fiscal_years(text: str) -> set[str]:
     return {re.sub(r"\D", "", y) for y in years}
 
 
+_SCALES = (Decimal(1), Decimal("0.001"), Decimal("0.000001"), Decimal(1000))
+
+
+def _value(token: str) -> tuple[Decimal, int] | None:
+    """Numeric value plus its significant decimal places ("1616.00" -> (1616, 0), "8.70" -> (8.7, 1))."""
+    try:
+        v = Decimal(token)
+    except InvalidOperation:
+        return None
+    frac = token.split(".")[1].rstrip("0") if "." in token else ""
+    return v, len(frac)
+
+
+def _supported(token: str, context_values: list[Decimal]) -> bool:
+    """A figure is supported if some context figure equals it at the answer's displayed precision,
+    either as written or after a thousands/millions unit change (filings often report in thousands
+    while answers are given in millions or billions)."""
+    parsed = _value(token)
+    if parsed is None:
+        return False
+    v, places = parsed
+    q = Decimal(1).scaleb(-places)
+    for c in context_values:
+        for s in _SCALES:
+            if (c * s).quantize(q, rounding=ROUND_HALF_UP) == v.quantize(q, rounding=ROUND_HALF_UP):
+                return True
+    return False
+
+
 def check_numeric_hallucination(answer: str, context: str) -> FailureFlag | None:
     answer_numbers = _extract_numbers(answer)
-    context_numbers = _extract_numbers(context)
-    unsupported = answer_numbers - context_numbers
+    context_values = [p[0] for p in map(_value, _extract_numbers(context)) if p]
+    # compare by value, not string: "1577.00" in an answer matches "1,577" in a filing
+    unsupported = {n for n in answer_numbers if not _supported(n, context_values)}
     # Filter out trivial/common numbers (page refs, single digits) that are
     # too generic to be meaningful hallucination evidence.
     unsupported = {n for n in unsupported if len(n.replace(".", "")) >= 2}
@@ -222,9 +283,34 @@ def check_citation_gap(answer: str, expected_company: str) -> FailureFlag | None
     return None
 
 
+def check_entity_mismatch(question: str, retrieved_company: str) -> FailureFlag | None:
+    """The question names a company, but the passage the answer is built from belongs to a different one."""
+    asked = _companies_named(question)
+    source = _companies_named(retrieved_company)
+    if asked and source and not (asked & source):
+        return FailureFlag(
+            category=FailureCategory.ENTITY_MISMATCH,
+            severity=Severity.HIGH,
+            detail=f"Question asks about {sorted(asked)} but the answer's source filing is from {retrieved_company}.",
+            evidence=f"asked={sorted(asked)} source={retrieved_company}",
+        )
+    return None
+
+
 def check_unsupported_claim(answer: str, context: str, judge) -> FailureFlag | None:
-    """Use an injected judge to detect unsupported qualitative claims."""
-    judgment = judge(answer, context)
+    """Use an injected judge to detect unsupported qualitative claims.
+
+    The judge is a remote LLM call and can fail (live Nova Lite occasionally returns a malformed
+    tool-use response). One retry, then skip the check rather than failing the user's request."""
+    judgment = None
+    for attempt in range(2):
+        try:
+            judgment = judge(answer, context)
+            break
+        except Exception as e:  # noqa: BLE001 - any judge/provider error must not break /ask
+            logger.warning(f"unsupported-claim judge failed (attempt {attempt + 1}): {e}")
+    if judgment is None:
+        return None
     if not judgment.supported:
         return FailureFlag(
             category=FailureCategory.UNSUPPORTED_CLAIM,
@@ -264,6 +350,7 @@ def evaluate_response(
         (check_period_mismatch, (answer, context_periods, question)),
         (check_retrieval_miss, (answer, top_score)),
         (check_citation_gap, (answer, company)),
+        (check_entity_mismatch, (question, company)),
     ]:
         flag = check_fn(*args)
         if flag:

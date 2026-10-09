@@ -1,0 +1,24 @@
+{
+ "source": "patronus-ai/financebench data/financebench_open_source.jsonl",
+ "information_extraction": {
+  "set": "information_extraction",
+  "n": 23,
+  "false_alarms_on_gold": 0,
+  "false_alarm_rate": 0.0,
+  "wrong_number_caught_x1.37": 21,
+  "recall_x1.37": 0.913,
+  "wrong_number_caught_plus10pct": 21,
+  "recall_plus10pct": 0.913,
+  "fp_ids": []
+ },
+ "all_answers_with_figures": {
+  "set": "all_answers_with_figures (includes computed answers)",
+  "n": 121,
+  "false_alarms_on_gold": 60,
+  "false_alarm_rate": 0.4959,
+  "wrong_number_caught_x1.37": 116,
+  "recall_x1.37": 0.9587,
+  "wrong_number_caught_plus10pct": 111,
+  "recall_plus10pct": 0.9174
+ }
+}

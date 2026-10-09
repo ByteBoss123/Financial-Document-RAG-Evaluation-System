@@ -1,0 +1,11 @@
+{
+  "date": "2026-10-09",
+  "script": "infra/redeploy.py (steps run individually through the AWS API with the same logic)",
+  "build": {"project": "findocqa-build", "start": "2026-10-09T17:17:17Z", "end": "2026-10-09T17:20:39Z", "seconds": 202,
+            "image": "sha256:78556fc017cd1fd7afa82943f3a1ba18d6bf13bc85b2ec6f1c9e04a7506d6aed"},
+  "deploy_new": {"status": "Successful", "smoke": "5 of 5 passed (HTTP 200, non-error answer, top source = company named)"},
+  "rollback_drill": {"to": "sha256:14bfb0e228073076023add810f855751751bd83e240de65dca0d5506374d9cd9",
+                     "deploy_seconds": 29, "smoke": "5 of 5 passed"},
+  "roll_forward": {"deploy_seconds": 29, "smoke": "5 of 5 passed", "live_image_is_new": true},
+  "note": "The first single-script attempt exceeded the API tool's execution time limit after all three deploys; its smoke results were lost, so the drill was rerun step by step and only the rerun is reported."
+}

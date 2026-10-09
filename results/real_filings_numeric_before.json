@@ -1,0 +1,39 @@
+{
+ "source": "patronus-ai/financebench data/financebench_open_source.jsonl",
+ "information_extraction": {
+  "set": "information_extraction",
+  "n": 23,
+  "false_alarms_on_gold": 14,
+  "false_alarm_rate": 0.6087,
+  "wrong_number_caught_x1.37": 21,
+  "recall_x1.37": 0.913,
+  "wrong_number_caught_plus10pct": 21,
+  "recall_plus10pct": 0.913,
+  "fp_ids": [
+   "financebench_id_03029",
+   "financebench_id_04672",
+   "financebench_id_08286",
+   "financebench_id_03882",
+   "financebench_id_05718",
+   "financebench_id_04417",
+   "financebench_id_07661",
+   "financebench_id_10285",
+   "financebench_id_04209",
+   "financebench_id_04171",
+   "financebench_id_04700",
+   "financebench_id_03282",
+   "financebench_id_03531",
+   "financebench_id_04980"
+  ]
+ },
+ "all_answers_with_figures": {
+  "set": "all_answers_with_figures (includes computed answers)",
+  "n": 121,
+  "false_alarms_on_gold": 87,
+  "false_alarm_rate": 0.719,
+  "wrong_number_caught_x1.37": 118,
+  "recall_x1.37": 0.9752,
+  "wrong_number_caught_plus10pct": 118,
+  "recall_plus10pct": 0.9752
+ }
+}

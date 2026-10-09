@@ -82,6 +82,71 @@ The fix was to thread the filing's actual **fiscal period end** (SEC's
 (`test_evaluate_response_clean_answer_passes`), not by inspection — see
 `tests/test_failure_detection.py` for the regression test that locks this in.
 
+## Real-filing evaluation (what the synthetic benchmark missed)
+
+The 60-record benchmark is templated (6 patterns x 10 companies), so 100% on it says little.
+The detectors were therefore also run on real filing text and on live traffic.
+
+**FinanceBench (real 10-K/10-Q evidence).** `python scripts/real_filings_eval.py` runs the
+numeric-hallucination detector on the 23 FinanceBench "information extraction" answers that
+contain a figure (gold answer + the filing passage it came from), and on the same answers with
+every figure changed (x1.37+1, and a harder +10%).
+
+| Detector version | Correct answers falsely flagged | Wrong figures caught |
+|---|---|---|
+| Original (string match) | 14 of 23 | 21 of 23 |
+| Fixed (value match at displayed precision, thousands/millions/billions) | 0 of 23 | 21 of 23 |
+
+The 2 misses are single-digit or zero figures, which the detector skips by design. Across all
+121 answers with figures, 60 are still flagged because FinanceBench computes many answers
+(ratios, margins) that do not appear verbatim in the filing; those need the LLM judge.
+The fix was developed on these same 23 cases, so treat 0 of 23 as in-sample.
+
+**Live Lambda (20 questions, `results/live_lambda_replay.json`).**
+- 8 of 20 answers, all copied verbatim from filings, were flagged as numeric hallucinations.
+  Cause: the answer template's "10-K" label was parsed as the figure "10". SEC form names are
+  now ignored, and answers are cut on word boundaries so a figure is never split. Replay: 0 of 20.
+- All 4 Morgan Stanley questions were answered from JPMorgan or Goldman Sachs filings (Morgan
+  Stanley appears to be missing from the deployed index), and 3 of the 4 passed every detector.
+  A new `entity_mismatch` detector flags all 4 and none of the 16 right-company answers.
+- Warm requests take 13 to 17 ms server-side; a cold start took 85 s (model load).
+- That deployment had no LLM key, so it served extractive answers, and its role had no Bedrock
+  permission, so the judge never ran. See "Redeploy" below for the rebuilt service.
+
+**Held-out check (TAT-QA, `python scripts/heldout_tatqa_eval.py`).** 1,052 extracted answers from real
+annual reports, never looked at while building the fix:
+
+| Answers | False alarms, old -> fixed | Wrong figures (+10%) caught, old -> fixed |
+|---|---|---|
+| As written in the report (1,039) | 2 -> 2 | 96.7% -> 95.3% |
+| Restated: no commas, 2 decimals, next unit up (1,052) | 1,015 (96%) -> 33 (3%) | 100% -> 98.4% |
+
+The restating rule also rewrites day numbers in dates, so that variant is a stress test.
+
+**Bugs found after redeploying with Llama 3.3 70B on Bedrock.**
+- The Nova Lite judge sometimes returns a malformed tool-use response; that exception turned the
+  whole `/ask` request into an HTTP 500. The judge now retries once and is skipped on failure.
+- The prompt requires the model to cite "10-K filed 2026-02-13"; the date's "02" and "13" were
+  flagged as hallucinated figures. Calendar dates are no longer treated as figures.
+
+**Live result after redeploy (`results/live_lambda_v2.json`, same 20 questions).** 20 of 20 HTTP 200;
+20 of 20 answers sourced from the right company (was 16 of 20); 0 numeric false alarms; cold start 44 s
+(was 85 s); server latency with Llama 3.3 generation and the judge p50 2.1 s, p95 4.6 s. Known limitation:
+the Nova Lite judge flagged 2 answers that correctly declined ("the excerpts do not cover this").
+
+Regression tests for each case are in `tests/test_real_filing_regressions.py` (24 tests total).
+
+Design reviews for each decision below: `docs/design_reviews.md`.
+
+## Redeploy without local Docker
+
+`Dockerfile` bakes the embedding model into the image (the old image downloaded it into `/tmp` on every
+cold start), ingests the latest 10-K for all five filers at build time, and fails the build if any filer
+yields no sections (Morgan Stanley's 10-K has no standard "Item 1A/7" headings and was silently dropped;
+it now falls back to full-document text). The image is built in AWS CodeBuild (project `findocqa-build`,
+source in `s3://findocqa-build-<account>/src/`) and pushed to the existing ECR repo. Answers are generated
+with Amazon Bedrock when `BEDROCK_GENERATION_MODEL_ID` is set (no API key; uses the Lambda role).
+
 ## Setup
 
 ```bash
@@ -121,7 +186,7 @@ streamlit run dashboard/dashboard.py
 python -m pytest tests/ -v
 ```
 
-The deterministic detector and integration suite contains 14 tests. To run
+The deterministic detector and integration suite contains 24 tests. To run
 the versioned 60-record synthetic SEC-style benchmark with all five detectors,
 including the Amazon Nova Lite judge:
 

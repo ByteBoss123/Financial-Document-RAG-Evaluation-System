@@ -134,6 +134,15 @@ SECTION_PATTERNS = {
 }
 
 
+def _visible_text(html: str) -> str:
+    soup = BeautifulSoup(html, "lxml")
+    # Strip tables' inner whitespace noise but keep them as text blocks --
+    # MD&A and Risk Factors are prose, so this is fine for those sections.
+    text = soup.get_text("\n")
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return re.sub(r"[ \t]{2,}", " ", text)
+
+
 def extract_sections(html: str) -> dict[str, str]:
     """
     Parse a 10-K/10-Q HTML doc and pull out the major narrative sections by
@@ -141,12 +150,7 @@ def extract_sections(html: str) -> dict[str, str]:
     text) rather than depending on consistent HTML structure, since EDGAR
     filings have no standardized markup across filers.
     """
-    soup = BeautifulSoup(html, "lxml")
-    # Strip tables' inner whitespace noise but keep them as text blocks --
-    # MD&A and Risk Factors are prose, so this is fine for those sections.
-    text = soup.get_text("\n")
-    text = re.sub(r"\n{3,}", "\n\n", text)
-    text = re.sub(r"[ \t]{2,}", " ", text)
+    text = _visible_text(html)
 
     # Build a list of (start_index, section_key) for every heading we find,
     # in document order, then slice between consecutive matches.
@@ -203,6 +207,18 @@ def ingest_company(ticker: str, form_type: str = "10-K", out_dir: str = "data") 
             source_url=source_url,
         ))
 
+    if not records:
+        # Some filers (e.g. Morgan Stanley) do not use standard "Item 1A/7" headings, so no section
+        # matches. Index the whole document instead of silently dropping the company.
+        full = _visible_text(html)
+        if len(full) >= 200:
+            records.append(FilingSection(
+                company=filing["company"], cik=cik, form_type=form_type, filed_date=filing["filed_date"],
+                fiscal_period_end=filing.get("report_date"), section_name="full_text", text=full,
+                source_url=source_url,
+            ))
+            logger.warning(f"{ticker}: no standard Item headings matched; indexed full document text")
+
     out_path = Path(out_dir)
     out_path.mkdir(parents=True, exist_ok=True)
     out_file = out_path / f"{ticker.upper()}_{form_type.replace('/', '')}_{filing['filed_date']}.json"
@@ -218,8 +234,14 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     tickers = sys.argv[1:] if len(sys.argv) > 1 else list(KNOWN_CIKS.keys())
+    failed = []
     for t in tickers:
         try:
-            ingest_company(t)
-        except Exception as e:
+            if not ingest_company(t):
+                failed.append(t)
+        except Exception as e:  # noqa: BLE001 - report every ticker, then fail the build below
             logger.error(f"Failed to ingest {t}: {e}")
+            failed.append(t)
+    if failed:
+        # a company silently missing from the index is worse than a failed build
+        sys.exit(f"Ingestion produced no records for: {', '.join(failed)}")

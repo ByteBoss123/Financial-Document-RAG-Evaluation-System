@@ -1,0 +1,13 @@
+{
+  "source": "Live findocqa Lambda (container image, 3008 MB, us-east-1), 20 questions about BGC, JPM, GS, MS, ICE, 2026-10-09; answers pulled from /logs",
+  "index_chunks": 3782,
+  "answer_mode": "extractive fallback (no LLM API key configured in the deployment)",
+  "cold_start_health_call_ms": 85516,
+  "first_ask_server_ms": 8387,
+  "warm_ask_server_ms_range": [13.5, 16.9],
+  "retrieval_company_correct": "16 of 20 (all 4 Morgan Stanley questions returned JPMorgan or Goldman Sachs passages)",
+  "numeric_hallucination_flags_in_production": "8 of 20 unique answers, all copied verbatim from the filing (false alarms); the only unsupported token in each was '10' from the answer template's '10-K' label",
+  "numeric_hallucination_flags_after_fix": "0 of 20 (replay with context restricted to the copied passage, a subset of production context, so production would flag no more)",
+  "entity_mismatch_flags_after_fix": "4 of 4 wrong-company answers flagged, 0 of 16 right-company answers flagged",
+  "wrong_company_answers_passed_in_production": "3 of 4"
+}

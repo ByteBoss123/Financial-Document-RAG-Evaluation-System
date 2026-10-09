@@ -1,0 +1,32 @@
+{
+ "deployed": "2026-10-09, image sha256:14bfb0e2..., Python 3.12 base, model baked in, Bedrock Llama 3.3 70B generation, Nova Lite judge",
+ "index_chunks": {
+  "before": 3782,
+  "after": 4777
+ },
+ "morgan_stanley_in_index": {
+  "before": false,
+  "after": true
+ },
+ "cold_start_first_call_ms": {
+  "before": 85516,
+  "after": 44035
+ },
+ "requests": 20,
+ "http_200": 20,
+ "right_company_top_source": {
+  "before": "16 of 20",
+  "after": "20 of 20"
+ },
+ "numeric_hallucination_flags": {
+  "before_date_fix_first_10_llm_answers": "7 of 10 (all cited filing-date fragments)",
+  "after": "0 of 20"
+ },
+ "unsupported_claim_flags": "2 of 20, both on answers that correctly said the excerpt did not cover the topic (judge false positives; known limitation)",
+ "server_latency_ms_with_llm_and_judge": {
+  "p50": 2054.5,
+  "p95_nearest_rank": 4558,
+  "n": 20
+ },
+ "judge_errors_now_non_fatal": true
+}

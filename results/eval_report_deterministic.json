@@ -1,0 +1,47 @@
+{
+  "dataset": "data/eval_benchmark.jsonl",
+  "dataset_type": "curated synthetic SEC-style benchmark",
+  "judge_enabled": false,
+  "records_evaluated": 60,
+  "exact_match_accuracy": 1.0,
+  "micro_precision": 1.0,
+  "micro_recall": 1.0,
+  "micro_f1": 1.0,
+  "per_category": {
+    "citation_gap": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 10
+    },
+    "numeric_hallucination": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 10
+    },
+    "period_mismatch": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 10
+    },
+    "retrieval_miss": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 10
+    },
+    "unsupported_claim": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 0
+    }
+  },
+  "latency_ms": {
+    "p50": 0.07,
+    "p95": 0.11
+  },
+  "mismatches": []
+}
