@@ -9,6 +9,18 @@ failure mode, structured request logging, and a monitoring dashboard that
 surfaces failure rate over time instead of hiding it inside a single
 "looks fine" demo run.
 
+## Results at a glance
+
+| Area | Result | Evidence |
+|---|---|---|
+| Live service | AWS Lambda + API Gateway + Bedrock (Llama 3.3 70B); right-company answers 16 -> 20 of 20 after fixing a silently dropped filer | `results/live_lambda_v2.json` |
+| Detector false alarms, held out | 96% -> 3% on 1,052 TAT-QA answers, still catching 98.4% of injected wrong figures | `results/heldout_tatqa_*.json` |
+| Detector false alarms, live | 7 of 10 -> 0 of 20 Llama answers | `results/live_lambda_v2.json` |
+| Infrastructure automation | One-command build, deploy, smoke test, automatic rollback; rollback drill 29 s, 5/5 smoke checks | `infra/redeploy.py`, `results/redeploy_drill.json` |
+| Tests | 24 pytest tests, including a regression test for every real-filing bug | `tests/` |
+
+Design decisions and the evidence behind them: [`docs/design_reviews.md`](docs/design_reviews.md) (DR-1 to DR-6).
+
 ## Why this problem
 
 RAG over financial filings (10-Ks, 10-Qs, earnings materials) is genuinely
@@ -127,7 +139,7 @@ The restating rule also rewrites day numbers in dates, so that variant is a stre
 - The Nova Lite judge sometimes returns a malformed tool-use response; that exception turned the
   whole `/ask` request into an HTTP 500. The judge now retries once and is skipped on failure.
 - The prompt requires the model to cite "10-K filed 2026-02-13"; the date's "02" and "13" were
-  flagged as hallucinated figures. Calendar dates are no longer treated as figures.
+  flagged as hallucinated figures (7 of the first 10 Llama answers). Calendar dates are no longer treated as figures.
 
 **Live result after redeploy (`results/live_lambda_v2.json`, same 20 questions).** 20 of 20 HTTP 200;
 20 of 20 answers sourced from the right company (was 16 of 20); 0 numeric false alarms; cold start 44 s
