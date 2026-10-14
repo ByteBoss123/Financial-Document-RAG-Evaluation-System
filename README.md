@@ -235,3 +235,17 @@ can be imported and tested without pulling in `faiss`/`sentence-transformers`.)
 - **CIK lookup is a hardcoded dict** for five companies. SEC's own
   `company_tickers.json` endpoint could replace this with full ticker
   coverage in about ten lines of code.
+
+## Decision supported and October 14 reproducibility review
+
+**Decision:** which generated document answers should be flagged for analyst review because the number, entity, period, or evidence may be wrong?
+The detector supports review prioritization; it does not certify financial correctness or replace an analyst.
+This is a project demonstration, not evidence of business adoption or measured review-time savings.
+
+Executed locally: `python -m pytest -q` (24 passed) and `python scripts/heldout_tatqa_eval.py review`.
+[The rerun](results/heldout_tatqa_review.json) reproduces 33 false alarms among 1,052 reformatted answers (3.14%)
+and 1,035/1,052 perturbed-figure detections (98.38%). This is detector performance under defined perturbations,
+not end-to-end RAG accuracy. Original-format answers have 2/1,039 false alarms and 990/1,039 perturbed figures detected.
+The review did not invoke live Bedrock/Lambda, rebuild the retrieval index, or verify current cloud deployment status.
+
+For a small local detector-only environment, install pytest, pydantic, and python-dotenv; the full application dependencies remain in requirements.txt.
