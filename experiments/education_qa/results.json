@@ -1,0 +1,706 @@
+{
+  "selected_threshold": 0.2,
+  "selection": "Development decision accuracy, ties by coverage then lower threshold",
+  "provenance": "AI-assisted authored demonstration questions and labels; no student data. Dev and test were authored together and are not an independently collected benchmark.",
+  "sha256": {
+    "course_notes.json": "f351b712a003a4c290019de8b01e43973b852abaaf42244602ed0f4397abc01d",
+    "benchmark.json": "78aace3dfa1ad945b2234ca637b3fce1161722081475ef2b8fe98a6981037985",
+    "assistant.py": "6d9b2e1d7964763ea3f4536e474c224fe7b67eab5da5f4039b207c83a058d5bc",
+    "evaluate.py": "ff7ea332e2c119de7cb57e95c8b4c7ceec472fdfbed656d0e5c70a5532a7cfe9"
+  },
+  "development_sweep": [
+    {
+      "threshold": 0.0,
+      "n": 12,
+      "decision_accuracy": 0.9166666666666666,
+      "coverage": 0.5833333333333334,
+      "citation_accuracy_when_answered": 0.8571428571428571,
+      "unanswerable_false_answer_rate": 0.16666666666666666,
+      "answerable_correct_response_rate": 1.0
+    },
+    {
+      "threshold": 0.05,
+      "n": 12,
+      "decision_accuracy": 0.9166666666666666,
+      "coverage": 0.5833333333333334,
+      "citation_accuracy_when_answered": 0.8571428571428571,
+      "unanswerable_false_answer_rate": 0.16666666666666666,
+      "answerable_correct_response_rate": 1.0
+    },
+    {
+      "threshold": 0.1,
+      "n": 12,
+      "decision_accuracy": 0.9166666666666666,
+      "coverage": 0.5833333333333334,
+      "citation_accuracy_when_answered": 0.8571428571428571,
+      "unanswerable_false_answer_rate": 0.16666666666666666,
+      "answerable_correct_response_rate": 1.0
+    },
+    {
+      "threshold": 0.15,
+      "n": 12,
+      "decision_accuracy": 0.9166666666666666,
+      "coverage": 0.5833333333333334,
+      "citation_accuracy_when_answered": 0.8571428571428571,
+      "unanswerable_false_answer_rate": 0.16666666666666666,
+      "answerable_correct_response_rate": 1.0
+    },
+    {
+      "threshold": 0.2,
+      "n": 12,
+      "decision_accuracy": 1.0,
+      "coverage": 0.5,
+      "citation_accuracy_when_answered": 1.0,
+      "unanswerable_false_answer_rate": 0.0,
+      "answerable_correct_response_rate": 1.0
+    },
+    {
+      "threshold": 0.25,
+      "n": 12,
+      "decision_accuracy": 1.0,
+      "coverage": 0.5,
+      "citation_accuracy_when_answered": 1.0,
+      "unanswerable_false_answer_rate": 0.0,
+      "answerable_correct_response_rate": 1.0
+    },
+    {
+      "threshold": 0.3,
+      "n": 12,
+      "decision_accuracy": 1.0,
+      "coverage": 0.5,
+      "citation_accuracy_when_answered": 1.0,
+      "unanswerable_false_answer_rate": 0.0,
+      "answerable_correct_response_rate": 1.0
+    },
+    {
+      "threshold": 0.35,
+      "n": 12,
+      "decision_accuracy": 1.0,
+      "coverage": 0.5,
+      "citation_accuracy_when_answered": 1.0,
+      "unanswerable_false_answer_rate": 0.0,
+      "answerable_correct_response_rate": 1.0
+    },
+    {
+      "threshold": 0.4,
+      "n": 12,
+      "decision_accuracy": 1.0,
+      "coverage": 0.5,
+      "citation_accuracy_when_answered": 1.0,
+      "unanswerable_false_answer_rate": 0.0,
+      "answerable_correct_response_rate": 1.0
+    },
+    {
+      "threshold": 0.45,
+      "n": 12,
+      "decision_accuracy": 0.9166666666666666,
+      "coverage": 0.4166666666666667,
+      "citation_accuracy_when_answered": 1.0,
+      "unanswerable_false_answer_rate": 0.0,
+      "answerable_correct_response_rate": 0.8333333333333334
+    },
+    {
+      "threshold": 0.5,
+      "n": 12,
+      "decision_accuracy": 0.8333333333333334,
+      "coverage": 0.3333333333333333,
+      "citation_accuracy_when_answered": 1.0,
+      "unanswerable_false_answer_rate": 0.0,
+      "answerable_correct_response_rate": 0.6666666666666666
+    },
+    {
+      "threshold": 0.55,
+      "n": 12,
+      "decision_accuracy": 0.8333333333333334,
+      "coverage": 0.3333333333333333,
+      "citation_accuracy_when_answered": 1.0,
+      "unanswerable_false_answer_rate": 0.0,
+      "answerable_correct_response_rate": 0.6666666666666666
+    },
+    {
+      "threshold": 0.6,
+      "n": 12,
+      "decision_accuracy": 0.6666666666666666,
+      "coverage": 0.16666666666666666,
+      "citation_accuracy_when_answered": 1.0,
+      "unanswerable_false_answer_rate": 0.0,
+      "answerable_correct_response_rate": 0.3333333333333333
+    },
+    {
+      "threshold": 0.65,
+      "n": 12,
+      "decision_accuracy": 0.5,
+      "coverage": 0.0,
+      "citation_accuracy_when_answered": null,
+      "unanswerable_false_answer_rate": 0.0,
+      "answerable_correct_response_rate": 0.0
+    },
+    {
+      "threshold": 0.7,
+      "n": 12,
+      "decision_accuracy": 0.5,
+      "coverage": 0.0,
+      "citation_accuracy_when_answered": null,
+      "unanswerable_false_answer_rate": 0.0,
+      "answerable_correct_response_rate": 0.0
+    },
+    {
+      "threshold": 0.75,
+      "n": 12,
+      "decision_accuracy": 0.5,
+      "coverage": 0.0,
+      "citation_accuracy_when_answered": null,
+      "unanswerable_false_answer_rate": 0.0,
+      "answerable_correct_response_rate": 0.0
+    },
+    {
+      "threshold": 0.8,
+      "n": 12,
+      "decision_accuracy": 0.5,
+      "coverage": 0.0,
+      "citation_accuracy_when_answered": null,
+      "unanswerable_false_answer_rate": 0.0,
+      "answerable_correct_response_rate": 0.0
+    },
+    {
+      "threshold": 0.85,
+      "n": 12,
+      "decision_accuracy": 0.5,
+      "coverage": 0.0,
+      "citation_accuracy_when_answered": null,
+      "unanswerable_false_answer_rate": 0.0,
+      "answerable_correct_response_rate": 0.0
+    },
+    {
+      "threshold": 0.9,
+      "n": 12,
+      "decision_accuracy": 0.5,
+      "coverage": 0.0,
+      "citation_accuracy_when_answered": null,
+      "unanswerable_false_answer_rate": 0.0,
+      "answerable_correct_response_rate": 0.0
+    },
+    {
+      "threshold": 0.95,
+      "n": 12,
+      "decision_accuracy": 0.5,
+      "coverage": 0.0,
+      "citation_accuracy_when_answered": null,
+      "unanswerable_false_answer_rate": 0.0,
+      "answerable_correct_response_rate": 0.0
+    },
+    {
+      "threshold": 1.0,
+      "n": 12,
+      "decision_accuracy": 0.5,
+      "coverage": 0.0,
+      "citation_accuracy_when_answered": null,
+      "unanswerable_false_answer_rate": 0.0,
+      "answerable_correct_response_rate": 0.0
+    }
+  ],
+  "test_always_retrieve": {
+    "metrics": {
+      "n": 24,
+      "decision_accuracy": 0.7083333333333334,
+      "coverage": 0.7916666666666666,
+      "citation_accuracy_when_answered": 0.631578947368421,
+      "unanswerable_false_answer_rate": 0.5833333333333334,
+      "answerable_correct_response_rate": 1.0
+    },
+    "predictions": [
+      {
+        "question": "Which data selects hyperparameters?",
+        "answer": "Training data fits model parameters. Validation data selects hyperparameters. The test set estimates performance after model selection and should not guide tuning.",
+        "citation": "split",
+        "source_title": "Training, validation and test sets",
+        "abstained": false,
+        "retrieval_score": 0.4082630930041441,
+        "gold_citation": "split",
+        "correct": true
+      },
+      {
+        "question": "Where should preprocessing transformations be fitted?",
+        "answer": "Data leakage occurs when information unavailable at prediction time enters training. Fit preprocessing transformations only on training data, then apply the fitted transformation to validation and test data.",
+        "citation": "leakage",
+        "source_title": "Data leakage",
+        "abstained": false,
+        "retrieval_score": 0.3187466974075599,
+        "gold_citation": "leakage",
+        "correct": true
+      },
+      {
+        "question": "Which measure divides true positives by predicted positives?",
+        "answer": "Precision is true positives divided by all predicted positives. It measures how many positive predictions are correct.",
+        "citation": "precision",
+        "source_title": "Precision",
+        "abstained": false,
+        "retrieval_score": 0.5967517369196116,
+        "gold_citation": "precision",
+        "correct": true
+      },
+      {
+        "question": "Which measure divides true positives by actual positives?",
+        "answer": "Recall is true positives divided by all actual positives. It measures how many actual positive cases the model detects.",
+        "citation": "recall",
+        "source_title": "Recall",
+        "abstained": false,
+        "retrieval_score": 0.6442383556562976,
+        "gold_citation": "recall",
+        "correct": true
+      },
+      {
+        "question": "Why can accuracy mislead on imbalanced classification?",
+        "answer": "Accuracy can hide poor minority class performance in imbalanced classification. Inspect precision, recall and a confusion matrix, and select metrics based on the costs of errors.",
+        "citation": "imbalance",
+        "source_title": "Imbalanced classification",
+        "abstained": false,
+        "retrieval_score": 0.6032997518403668,
+        "gold_citation": "imbalance",
+        "correct": true
+      },
+      {
+        "question": "What does strong training performance and weak validation performance suggest?",
+        "answer": "Overfitting happens when a model learns training-specific patterns that fail to generalize. A gap between strong training performance and weak validation performance can signal overfitting.",
+        "citation": "overfit",
+        "source_title": "Overfitting",
+        "abstained": false,
+        "retrieval_score": 0.4970766100546906,
+        "gold_citation": "overfit",
+        "correct": true
+      },
+      {
+        "question": "How should group-related observations be assigned to folds?",
+        "answer": "Cross validation repeats fitting and evaluation across different training and validation folds. Group-related observations must stay in the same fold to avoid information leakage.",
+        "citation": "cv",
+        "source_title": "Cross validation",
+        "abstained": false,
+        "retrieval_score": 0.4040957529965954,
+        "gold_citation": "cv",
+        "correct": true
+      },
+      {
+        "question": "Why evaluate time series using later observations?",
+        "answer": "Time series evaluation trains on earlier observations and evaluates on later observations. Random splits can reveal future information and produce optimistic results.",
+        "citation": "time",
+        "source_title": "Time series evaluation",
+        "abstained": false,
+        "retrieval_score": 0.5823283436251944,
+        "gold_citation": "time",
+        "correct": true
+      },
+      {
+        "question": "Does retrieval augmented generation guarantee correct answers?",
+        "answer": "Retrieval augmented generation retrieves source passages before generating an answer. Retrieved evidence can be irrelevant, and generated answers still require evaluation for correctness and source support.",
+        "citation": "rag",
+        "source_title": "Retrieval augmented generation",
+        "abstained": false,
+        "retrieval_score": 0.5721315966723218,
+        "gold_citation": "rag",
+        "correct": true
+      },
+      {
+        "question": "What happens to coverage when the abstention threshold increases?",
+        "answer": "Abstention means declining to answer when evidence is insufficient. Increasing an abstention threshold can reduce coverage while improving accuracy among answered questions.",
+        "citation": "abstain",
+        "source_title": "Abstention",
+        "abstained": false,
+        "retrieval_score": 0.5188925551169026,
+        "gold_citation": "abstain",
+        "correct": true
+      },
+      {
+        "question": "Why compare a complex model to a baseline?",
+        "answer": "A baseline model provides a simple reference for comparison. More complex models should be compared against the baseline using the same evaluation data and metrics.",
+        "citation": "baseline",
+        "source_title": "Baseline models",
+        "abstained": false,
+        "retrieval_score": 0.5690128721236004,
+        "gold_citation": "baseline",
+        "correct": true
+      },
+      {
+        "question": "Does correlation establish causation?",
+        "answer": "Correlation measures association and does not by itself establish causation. Confounding variables can influence both the proposed cause and the observed outcome.",
+        "citation": "causal",
+        "source_title": "Causation and correlation",
+        "abstained": false,
+        "retrieval_score": 0.6405033560473666,
+        "gold_citation": "causal",
+        "correct": true
+      },
+      {
+        "question": "What are the exact validation scores of my model?",
+        "answer": "Training data fits model parameters. Validation data selects hyperparameters. The test set estimates performance after model selection and should not guide tuning.",
+        "citation": "split",
+        "source_title": "Training, validation and test sets",
+        "abstained": false,
+        "retrieval_score": 0.4004678086125411,
+        "gold_citation": null,
+        "correct": false
+      },
+      {
+        "question": "Which textbook chapter defines precision?",
+        "answer": "Precision is true positives divided by all predicted positives. It measures how many positive predictions are correct.",
+        "citation": "precision",
+        "source_title": "Precision",
+        "abstained": false,
+        "retrieval_score": 0.47341025797187475,
+        "gold_citation": null,
+        "correct": false
+      },
+      {
+        "question": "What is my final classification project deadline?",
+        "answer": "Accuracy can hide poor minority class performance in imbalanced classification. Inspect precision, recall and a confusion matrix, and select metrics based on the costs of errors.",
+        "citation": "imbalance",
+        "source_title": "Imbalanced classification",
+        "abstained": false,
+        "retrieval_score": 0.42139586970005594,
+        "gold_citation": null,
+        "correct": false
+      },
+      {
+        "question": "How many folds did my professor require for cross validation?",
+        "answer": "Cross validation repeats fitting and evaluation across different training and validation folds. Group-related observations must stay in the same fold to avoid information leakage.",
+        "citation": "cv",
+        "source_title": "Cross validation",
+        "abstained": false,
+        "retrieval_score": 0.4477827772424911,
+        "gold_citation": null,
+        "correct": false
+      },
+      {
+        "question": "What is the university policy on generated answers?",
+        "answer": "Retrieval augmented generation retrieves source passages before generating an answer. Retrieved evidence can be irrelevant, and generated answers still require evaluation for correctness and source support.",
+        "citation": "rag",
+        "source_title": "Retrieval augmented generation",
+        "abstained": false,
+        "retrieval_score": 0.25846270954762124,
+        "gold_citation": null,
+        "correct": false
+      },
+      {
+        "question": "What grade will my baseline model earn?",
+        "answer": "A baseline model provides a simple reference for comparison. More complex models should be compared against the baseline using the same evaluation data and metrics.",
+        "citation": "baseline",
+        "source_title": "Baseline models",
+        "abstained": false,
+        "retrieval_score": 0.5728436577974708,
+        "gold_citation": null,
+        "correct": false
+      },
+      {
+        "question": "What learning rate should my neural network use?",
+        "answer": "Insufficient evidence in the supplied notes.",
+        "citation": null,
+        "source_title": null,
+        "abstained": true,
+        "retrieval_score": 0.0,
+        "gold_citation": null,
+        "correct": true
+      },
+      {
+        "question": "Who invented cross validation and in what year?",
+        "answer": "Cross validation repeats fitting and evaluation across different training and validation folds. Group-related observations must stay in the same fold to avoid information leakage.",
+        "citation": "cv",
+        "source_title": "Cross validation",
+        "abstained": false,
+        "retrieval_score": 0.585866292913834,
+        "gold_citation": null,
+        "correct": false
+      },
+      {
+        "question": "Where is the computer laboratory located?",
+        "answer": "Insufficient evidence in the supplied notes.",
+        "citation": null,
+        "source_title": null,
+        "abstained": true,
+        "retrieval_score": 0.0,
+        "gold_citation": null,
+        "correct": true
+      },
+      {
+        "question": "What is the tuition fee?",
+        "answer": "Insufficient evidence in the supplied notes.",
+        "citation": null,
+        "source_title": null,
+        "abstained": true,
+        "retrieval_score": 0.0,
+        "gold_citation": null,
+        "correct": true
+      },
+      {
+        "question": "Will tomorrow be rainy?",
+        "answer": "Insufficient evidence in the supplied notes.",
+        "citation": null,
+        "source_title": null,
+        "abstained": true,
+        "retrieval_score": 0.0,
+        "gold_citation": null,
+        "correct": true
+      },
+      {
+        "question": "What is my student identification number?",
+        "answer": "Insufficient evidence in the supplied notes.",
+        "citation": null,
+        "source_title": null,
+        "abstained": true,
+        "retrieval_score": 0.0,
+        "gold_citation": null,
+        "correct": true
+      }
+    ]
+  },
+  "test_selective": {
+    "metrics": {
+      "n": 24,
+      "decision_accuracy": 0.7083333333333334,
+      "coverage": 0.7916666666666666,
+      "citation_accuracy_when_answered": 0.631578947368421,
+      "unanswerable_false_answer_rate": 0.5833333333333334,
+      "answerable_correct_response_rate": 1.0
+    },
+    "predictions": [
+      {
+        "question": "Which data selects hyperparameters?",
+        "answer": "Training data fits model parameters. Validation data selects hyperparameters. The test set estimates performance after model selection and should not guide tuning.",
+        "citation": "split",
+        "source_title": "Training, validation and test sets",
+        "abstained": false,
+        "retrieval_score": 0.4082630930041441,
+        "gold_citation": "split",
+        "correct": true
+      },
+      {
+        "question": "Where should preprocessing transformations be fitted?",
+        "answer": "Data leakage occurs when information unavailable at prediction time enters training. Fit preprocessing transformations only on training data, then apply the fitted transformation to validation and test data.",
+        "citation": "leakage",
+        "source_title": "Data leakage",
+        "abstained": false,
+        "retrieval_score": 0.3187466974075599,
+        "gold_citation": "leakage",
+        "correct": true
+      },
+      {
+        "question": "Which measure divides true positives by predicted positives?",
+        "answer": "Precision is true positives divided by all predicted positives. It measures how many positive predictions are correct.",
+        "citation": "precision",
+        "source_title": "Precision",
+        "abstained": false,
+        "retrieval_score": 0.5967517369196116,
+        "gold_citation": "precision",
+        "correct": true
+      },
+      {
+        "question": "Which measure divides true positives by actual positives?",
+        "answer": "Recall is true positives divided by all actual positives. It measures how many actual positive cases the model detects.",
+        "citation": "recall",
+        "source_title": "Recall",
+        "abstained": false,
+        "retrieval_score": 0.6442383556562976,
+        "gold_citation": "recall",
+        "correct": true
+      },
+      {
+        "question": "Why can accuracy mislead on imbalanced classification?",
+        "answer": "Accuracy can hide poor minority class performance in imbalanced classification. Inspect precision, recall and a confusion matrix, and select metrics based on the costs of errors.",
+        "citation": "imbalance",
+        "source_title": "Imbalanced classification",
+        "abstained": false,
+        "retrieval_score": 0.6032997518403668,
+        "gold_citation": "imbalance",
+        "correct": true
+      },
+      {
+        "question": "What does strong training performance and weak validation performance suggest?",
+        "answer": "Overfitting happens when a model learns training-specific patterns that fail to generalize. A gap between strong training performance and weak validation performance can signal overfitting.",
+        "citation": "overfit",
+        "source_title": "Overfitting",
+        "abstained": false,
+        "retrieval_score": 0.4970766100546906,
+        "gold_citation": "overfit",
+        "correct": true
+      },
+      {
+        "question": "How should group-related observations be assigned to folds?",
+        "answer": "Cross validation repeats fitting and evaluation across different training and validation folds. Group-related observations must stay in the same fold to avoid information leakage.",
+        "citation": "cv",
+        "source_title": "Cross validation",
+        "abstained": false,
+        "retrieval_score": 0.4040957529965954,
+        "gold_citation": "cv",
+        "correct": true
+      },
+      {
+        "question": "Why evaluate time series using later observations?",
+        "answer": "Time series evaluation trains on earlier observations and evaluates on later observations. Random splits can reveal future information and produce optimistic results.",
+        "citation": "time",
+        "source_title": "Time series evaluation",
+        "abstained": false,
+        "retrieval_score": 0.5823283436251944,
+        "gold_citation": "time",
+        "correct": true
+      },
+      {
+        "question": "Does retrieval augmented generation guarantee correct answers?",
+        "answer": "Retrieval augmented generation retrieves source passages before generating an answer. Retrieved evidence can be irrelevant, and generated answers still require evaluation for correctness and source support.",
+        "citation": "rag",
+        "source_title": "Retrieval augmented generation",
+        "abstained": false,
+        "retrieval_score": 0.5721315966723218,
+        "gold_citation": "rag",
+        "correct": true
+      },
+      {
+        "question": "What happens to coverage when the abstention threshold increases?",
+        "answer": "Abstention means declining to answer when evidence is insufficient. Increasing an abstention threshold can reduce coverage while improving accuracy among answered questions.",
+        "citation": "abstain",
+        "source_title": "Abstention",
+        "abstained": false,
+        "retrieval_score": 0.5188925551169026,
+        "gold_citation": "abstain",
+        "correct": true
+      },
+      {
+        "question": "Why compare a complex model to a baseline?",
+        "answer": "A baseline model provides a simple reference for comparison. More complex models should be compared against the baseline using the same evaluation data and metrics.",
+        "citation": "baseline",
+        "source_title": "Baseline models",
+        "abstained": false,
+        "retrieval_score": 0.5690128721236004,
+        "gold_citation": "baseline",
+        "correct": true
+      },
+      {
+        "question": "Does correlation establish causation?",
+        "answer": "Correlation measures association and does not by itself establish causation. Confounding variables can influence both the proposed cause and the observed outcome.",
+        "citation": "causal",
+        "source_title": "Causation and correlation",
+        "abstained": false,
+        "retrieval_score": 0.6405033560473666,
+        "gold_citation": "causal",
+        "correct": true
+      },
+      {
+        "question": "What are the exact validation scores of my model?",
+        "answer": "Training data fits model parameters. Validation data selects hyperparameters. The test set estimates performance after model selection and should not guide tuning.",
+        "citation": "split",
+        "source_title": "Training, validation and test sets",
+        "abstained": false,
+        "retrieval_score": 0.4004678086125411,
+        "gold_citation": null,
+        "correct": false
+      },
+      {
+        "question": "Which textbook chapter defines precision?",
+        "answer": "Precision is true positives divided by all predicted positives. It measures how many positive predictions are correct.",
+        "citation": "precision",
+        "source_title": "Precision",
+        "abstained": false,
+        "retrieval_score": 0.47341025797187475,
+        "gold_citation": null,
+        "correct": false
+      },
+      {
+        "question": "What is my final classification project deadline?",
+        "answer": "Accuracy can hide poor minority class performance in imbalanced classification. Inspect precision, recall and a confusion matrix, and select metrics based on the costs of errors.",
+        "citation": "imbalance",
+        "source_title": "Imbalanced classification",
+        "abstained": false,
+        "retrieval_score": 0.42139586970005594,
+        "gold_citation": null,
+        "correct": false
+      },
+      {
+        "question": "How many folds did my professor require for cross validation?",
+        "answer": "Cross validation repeats fitting and evaluation across different training and validation folds. Group-related observations must stay in the same fold to avoid information leakage.",
+        "citation": "cv",
+        "source_title": "Cross validation",
+        "abstained": false,
+        "retrieval_score": 0.4477827772424911,
+        "gold_citation": null,
+        "correct": false
+      },
+      {
+        "question": "What is the university policy on generated answers?",
+        "answer": "Retrieval augmented generation retrieves source passages before generating an answer. Retrieved evidence can be irrelevant, and generated answers still require evaluation for correctness and source support.",
+        "citation": "rag",
+        "source_title": "Retrieval augmented generation",
+        "abstained": false,
+        "retrieval_score": 0.25846270954762124,
+        "gold_citation": null,
+        "correct": false
+      },
+      {
+        "question": "What grade will my baseline model earn?",
+        "answer": "A baseline model provides a simple reference for comparison. More complex models should be compared against the baseline using the same evaluation data and metrics.",
+        "citation": "baseline",
+        "source_title": "Baseline models",
+        "abstained": false,
+        "retrieval_score": 0.5728436577974708,
+        "gold_citation": null,
+        "correct": false
+      },
+      {
+        "question": "What learning rate should my neural network use?",
+        "answer": "Insufficient evidence in the supplied notes.",
+        "citation": null,
+        "source_title": null,
+        "abstained": true,
+        "retrieval_score": 0.0,
+        "gold_citation": null,
+        "correct": true
+      },
+      {
+        "question": "Who invented cross validation and in what year?",
+        "answer": "Cross validation repeats fitting and evaluation across different training and validation folds. Group-related observations must stay in the same fold to avoid information leakage.",
+        "citation": "cv",
+        "source_title": "Cross validation",
+        "abstained": false,
+        "retrieval_score": 0.585866292913834,
+        "gold_citation": null,
+        "correct": false
+      },
+      {
+        "question": "Where is the computer laboratory located?",
+        "answer": "Insufficient evidence in the supplied notes.",
+        "citation": null,
+        "source_title": null,
+        "abstained": true,
+        "retrieval_score": 0.0,
+        "gold_citation": null,
+        "correct": true
+      },
+      {
+        "question": "What is the tuition fee?",
+        "answer": "Insufficient evidence in the supplied notes.",
+        "citation": null,
+        "source_title": null,
+        "abstained": true,
+        "retrieval_score": 0.0,
+        "gold_citation": null,
+        "correct": true
+      },
+      {
+        "question": "Will tomorrow be rainy?",
+        "answer": "Insufficient evidence in the supplied notes.",
+        "citation": null,
+        "source_title": null,
+        "abstained": true,
+        "retrieval_score": 0.0,
+        "gold_citation": null,
+        "correct": true
+      },
+      {
+        "question": "What is my student identification number?",
+        "answer": "Insufficient evidence in the supplied notes.",
+        "citation": null,
+        "source_title": null,
+        "abstained": true,
+        "retrieval_score": 0.0,
+        "gold_citation": null,
+        "correct": true
+      }
+    ]
+  }
+}

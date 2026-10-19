@@ -235,3 +235,12 @@ can be imported and tested without pulling in `faiss`/`sentence-transformers`.)
 - **CIK lookup is a hardcoded dict** for five companies. SEC's own
   `company_tickers.json` endpoint could replace this with full ticker
   coverage in about ten lines of code.
+
+
+## Educational QA experiment
+
+[Course Evidence QA](experiments/education_qa/README.md) is a standalone, offline
+education-focused retrieval and abstention experiment. It includes 12 authored notes,
+12 development questions, 24 test questions, measured failure cases and five tests.
+It demonstrates why a relevant source is not necessarily sufficient evidence to answer.
+This is a small synthetic prototype, not a student deployment or learning-outcome study.

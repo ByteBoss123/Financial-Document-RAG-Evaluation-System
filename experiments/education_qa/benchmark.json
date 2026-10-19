@@ -1,0 +1,37 @@
+{
+ "provenance":"AI-assisted authored demonstration questions and labels; no student data. Dev and test were authored together and are not an independently collected benchmark.",
+ "dev":[
+ ["What is precision?","precision"], ["What is recall?","recall"],
+ ["What is data leakage?","leakage"], ["Explain overfitting.","overfit"],
+ ["What is cross validation?","cv"], ["What is abstention?","abstain"],
+ ["What is the campus parking fee?",null], ["Who teaches the course?",null],
+ ["When is the final exam?",null], ["What is the professor email address?",null],
+ ["What grade did I receive?",null], ["How do I apply for a scholarship?",null]
+ ],
+ "test":[
+ ["Which data selects hyperparameters?","split"],
+ ["Where should preprocessing transformations be fitted?","leakage"],
+ ["Which measure divides true positives by predicted positives?","precision"],
+ ["Which measure divides true positives by actual positives?","recall"],
+ ["Why can accuracy mislead on imbalanced classification?","imbalance"],
+ ["What does strong training performance and weak validation performance suggest?","overfit"],
+ ["How should group-related observations be assigned to folds?","cv"],
+ ["Why evaluate time series using later observations?","time"],
+ ["Does retrieval augmented generation guarantee correct answers?","rag"],
+ ["What happens to coverage when the abstention threshold increases?","abstain"],
+ ["Why compare a complex model to a baseline?","baseline"],
+ ["Does correlation establish causation?","causal"],
+ ["What are the exact validation scores of my model?",null],
+ ["Which textbook chapter defines precision?",null],
+ ["What is my final classification project deadline?",null],
+ ["How many folds did my professor require for cross validation?",null],
+ ["What is the university policy on generated answers?",null],
+ ["What grade will my baseline model earn?",null],
+ ["What learning rate should my neural network use?",null],
+ ["Who invented cross validation and in what year?",null],
+ ["Where is the computer laboratory located?",null],
+ ["What is the tuition fee?",null],
+ ["Will tomorrow be rainy?",null],
+ ["What is my student identification number?",null]
+ ]
+}
