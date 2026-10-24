@@ -7,7 +7,7 @@ from cloud_finance.analytics import analyze
 from cloud_finance.workflow import execute
 
 st.set_page_config(page_title='Cloud Finance | Snowflake',layout='wide')
-st.title('Cloud Finance | Snowflake')
+st.title('CloudLedger | Snowflake')
 st.caption('Real AWS billing • Snowflake reporting models • Python forecasts')
 database=st.sidebar.text_input('Database','CLOUD_FINANCE')
 schema=st.sidebar.text_input('Schema','CLOUD_FINANCE_BI')
@@ -50,6 +50,10 @@ st.dataframe(report['anomalies'],hide_index=True)
 st.caption('Service contributions are not causal explanations. Unallocated means ownership has not been verified. Estimated billing can change.')
 if report['forecast']:
     f=report['forecast'];st.subheader('Forecast validation')
+    if not f['planning_readiness']['ready']:
+        st.warning('Experimental forecast — not cleared for budget planning: '+ '; '.join(f['planning_readiness']['reasons']))
+    with st.expander('Multiple-period forecast evaluation'):
+        st.json(f['rolling_validation'])
     st.json({'selected_on_validation':f['selected'],'scores':f['scores']})
     selected=f['scores'][f['selected']]['holdout_wape'];baseline=f['scores']['seasonal_naive']['holdout_wape']
     if selected is not None and baseline is not None and selected>baseline:

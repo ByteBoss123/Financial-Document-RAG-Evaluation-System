@@ -1,8 +1,36 @@
-# Cloud Finance Intelligence
+# CloudLedger — Cloud Spend Intelligence & Finance BI
 
 A working Product Finance portfolio module: Python/SQL cost reporting, Streamlit BI,
 budget variance, service-level change contributions, forecast backtests, anomaly
 investigation, and a bounded Amazon Bedrock planner for QBR workflows.
+
+## Readiness controls and verified blockers
+
+The forecast now includes non-overlapping rolling-origin diagnostics and a
+planning-readiness policy. The real 115-day history yields only two complete
+28-day folds after the initial 56 training days. It fails the engineering
+readiness policy (minimum three folds, maximum 20% error per tested period,
+and no holdout degradation versus baseline). The existing model selection is
+unchanged; the UI and generated QBR label this forecast experimental rather than
+retroactively choosing the model that looked best on the already observed test.
+See `results/forecast_readiness.json`. This policy is not Finance-approved.
+
+AWS Project and Workload cost-allocation tag keys were activated and their
+Active status verified. Historical tag values were not available at the check;
+no project/team attribution has been invented. Activation does not create resource
+tags or prove resource ownership. Await billing propagation and verify actual
+tagged cost coverage before replacing Unallocated in reports.
+
+Existing financial-RAG Lambda telemetry was read for September 24–October 23:
+108 invocations on two days, four Lambda errors. This is not a CloudLedger
+production deployment or proof of business success. Per-day p95 durations are
+recorded separately, not averaged into a false whole-period percentile.
+`results/operational_readiness.json` leaves cost per successful business request
+and realized savings unset because attributable cost and business-success labels
+are missing. No running resource was resized or terminated.
+
+33 automated tests pass. Live Snowflake execution, hosted BI deployment,
+verified ownership, Finance sign-off and measured impact remain unverified.
 
 ## Snowflake integration and real-data verification
 
@@ -11,7 +39,7 @@ dedicated `snowflake_app.py` entrypoint. These replace the earlier SQL-only
 deployment approach. **Live Snowflake execution is pending an account connection.**
 Local mocked connector tests are explicitly not a substitute for that execution.
 
-Thirty automated tests pass. In addition, the actual AWS data was exercised through
+Thirty-three automated tests pass. In addition, the actual AWS data was exercised through
 the authenticated local Streamlit dashboard, QBR generation and persistent batch
 pipeline. Totals matched a separate ungrouped AWS Cost Explorer query within one
 microdollar. See [real-data verification](results/real_data_verification.json).

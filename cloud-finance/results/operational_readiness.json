@@ -1,0 +1,29 @@
+{
+  "checked_on": "2026-10-24",
+  "scope": "Existing financial RAG Lambda in us-east-1; not CloudLedger deployment",
+  "period_start": "2026-09-24",
+  "period_end_exclusive": "2026-10-24",
+  "invocations": 108,
+  "lambda_errors": 4,
+  "non_error_invocations": 104,
+  "observed_invocation_days": 2,
+  "daily_p95_duration_ms": [
+    {
+      "date": "2026-10-04",
+      "value": 149725.48713510085
+    },
+    {
+      "date": "2026-10-09",
+      "value": 63624.02097396921
+    }
+  ],
+  "allocation": {
+    "Project": "Active",
+    "Workload": "Active",
+    "historical_tagged_costs_available": false
+  },
+  "cost_per_successful_business_request": null,
+  "reason": "No verified workload-specific billing attribution or business-success metric; Lambda non-error is not verified business success",
+  "savings": null,
+  "stakeholder_signoff": false
+}

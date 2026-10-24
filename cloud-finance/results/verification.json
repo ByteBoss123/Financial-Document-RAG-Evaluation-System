@@ -1,6 +1,6 @@
 {
   "verified_on": "2026-10-24",
-  "automated_tests_passed": 30,
+  "automated_tests_passed": 33,
   "streamlit_interaction_tested": true,
   "real_billing_import": {
     "source": "AWS Cost Explorer daily UnblendedCost grouped by SERVICE",

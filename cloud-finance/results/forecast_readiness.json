@@ -1,0 +1,57 @@
+{
+  "source": "Actual AWS Cost Explorer",
+  "source_period": [
+    "2026-07-01",
+    "2026-10-23"
+  ],
+  "forecast": {
+    "selected": "trend_weekday",
+    "scores": {
+      "seasonal_naive": {
+        "validation_wape": 0.7193714838246613,
+        "holdout_wape": 0.0483382539414967
+      },
+      "trend_weekday": {
+        "validation_wape": 0.7030530110783808,
+        "holdout_wape": 0.22602610561505967
+      }
+    },
+    "rolling_validation": {
+      "horizon_days": 28,
+      "nonoverlapping_folds": [
+        {
+          "train_days": 56,
+          "test_start_index": 56,
+          "test_end_exclusive": 84,
+          "wape": {
+            "seasonal_naive": 0.6709440084913325,
+            "trend_weekday": 0.6545615341238855
+          }
+        },
+        {
+          "train_days": 84,
+          "test_start_index": 84,
+          "test_end_exclusive": 112,
+          "wape": {
+            "seasonal_naive": 0.043073847481571795,
+            "trend_weekday": 0.3376615290763904
+          }
+        }
+      ],
+      "purpose": "Historical diagnostics; already observed data, not a new independent test"
+    },
+    "planning_readiness": {
+      "ready": false,
+      "reasons": [
+        "Insufficient non-overlapping evaluation periods",
+        "Holdout error exceeds policy or is undefined",
+        "Selected model underperformed seasonal baseline",
+        "At least one historical period exceeds error policy"
+      ],
+      "max_wape": 0.2,
+      "min_folds": 3,
+      "policy_owner": "Engineering default; Finance approval pending"
+    }
+  },
+  "warning": "Historical diagnostics, not a newly held-out benchmark. Error policy is an engineering default, not approved by Finance."
+}

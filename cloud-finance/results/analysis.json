@@ -77,6 +77,118 @@
       }
     },
     "horizon_days": 28,
+    "rolling_validation": {
+      "horizon_days": 28,
+      "nonoverlapping_folds": [
+        {
+          "train_days": 56,
+          "test_start_index": 56,
+          "test_end_exclusive": 84,
+          "wape": {
+            "seasonal_naive": 0.021831908077748687,
+            "trend_weekday": 0.011627806521865864
+          }
+        },
+        {
+          "train_days": 84,
+          "test_start_index": 84,
+          "test_end_exclusive": 112,
+          "wape": {
+            "seasonal_naive": 0.02330939908497083,
+            "trend_weekday": 0.017409283085886122
+          }
+        },
+        {
+          "train_days": 112,
+          "test_start_index": 112,
+          "test_end_exclusive": 140,
+          "wape": {
+            "seasonal_naive": 0.02592559730548212,
+            "trend_weekday": 0.016125532158685636
+          }
+        },
+        {
+          "train_days": 140,
+          "test_start_index": 140,
+          "test_end_exclusive": 168,
+          "wape": {
+            "seasonal_naive": 0.024286329094997866,
+            "trend_weekday": 0.017998074733310398
+          }
+        },
+        {
+          "train_days": 168,
+          "test_start_index": 168,
+          "test_end_exclusive": 196,
+          "wape": {
+            "seasonal_naive": 0.025996134708181285,
+            "trend_weekday": 0.017210489132624834
+          }
+        },
+        {
+          "train_days": 196,
+          "test_start_index": 196,
+          "test_end_exclusive": 224,
+          "wape": {
+            "seasonal_naive": 0.049348136950378395,
+            "trend_weekday": 0.043931797997725265
+          }
+        },
+        {
+          "train_days": 224,
+          "test_start_index": 224,
+          "test_end_exclusive": 252,
+          "wape": {
+            "seasonal_naive": 0.13886276270168932,
+            "trend_weekday": 0.04040605266920106
+          }
+        },
+        {
+          "train_days": 252,
+          "test_start_index": 252,
+          "test_end_exclusive": 280,
+          "wape": {
+            "seasonal_naive": 0.05823493587644798,
+            "trend_weekday": 0.06262970664119659
+          }
+        },
+        {
+          "train_days": 280,
+          "test_start_index": 280,
+          "test_end_exclusive": 308,
+          "wape": {
+            "seasonal_naive": 0.016477320359755035,
+            "trend_weekday": 0.05209274253862708
+          }
+        },
+        {
+          "train_days": 308,
+          "test_start_index": 308,
+          "test_end_exclusive": 336,
+          "wape": {
+            "seasonal_naive": 0.05211077940306802,
+            "trend_weekday": 0.0639810416148917
+          }
+        },
+        {
+          "train_days": 336,
+          "test_start_index": 336,
+          "test_end_exclusive": 364,
+          "wape": {
+            "seasonal_naive": 0.05870673785969548,
+            "trend_weekday": 0.07075465341102553
+          }
+        }
+      ],
+      "purpose": "Historical diagnostics; already observed data, not a new independent test"
+    },
+    "planning_readiness": {
+      "ready": true,
+      "reasons": [],
+      "max_wape": 0.2,
+      "min_folds": 3,
+      "policy_owner": "Engineering default; Finance approval pending"
+    },
     "predictions": [
       165.9817,
       164.1512,

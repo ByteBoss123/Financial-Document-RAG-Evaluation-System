@@ -9,7 +9,7 @@ from cloud_finance.analytics import analyze
 from cloud_finance.workflow import execute,plan_with_bedrock
 from cloud_finance.auth import verify_password
 
-st.set_page_config(page_title='Cloud Finance Intelligence',page_icon='☁',layout='wide')
+st.set_page_config(page_title='CloudLedger',layout='wide')
 if os.getenv('FINANCE_PRIVATE_MODE')=='1':
     expected=os.getenv('FINANCE_PASSWORD_SHA256','')
     if not expected:
@@ -17,7 +17,7 @@ if os.getenv('FINANCE_PRIVATE_MODE')=='1':
     password=st.text_input('Access password',type='password')
     if not verify_password(password,expected):
         st.info('Enter the deployment password to access private billing.'); st.stop()
-st.title('Cloud Finance Intelligence')
+st.title('CloudLedger — Cloud Spend Intelligence')
 st.caption('Product Finance / spend planning and investigation')
 st.sidebar.header('Analysis controls')
 upload=st.sidebar.file_uploader('AWS Cost Explorer JSON (SERVICE / DAILY)',type=['json'])
@@ -60,6 +60,10 @@ with overview:
 with forecast:
     f=report['forecast']
     if f:
+        if not f['planning_readiness']['ready']:
+            st.warning('Experimental forecast — not cleared for budget planning: '+ '; '.join(f['planning_readiness']['reasons']))
+        with st.expander('Multiple-period forecast evaluation'):
+            st.json(f['rolling_validation'])
         st.write('Selected on validation:',f['selected'])
         st.dataframe(pd.DataFrame(f['scores']).T.style.format('{:.2%}'))
         chosen=f['scores'][f['selected']]['holdout_wape']

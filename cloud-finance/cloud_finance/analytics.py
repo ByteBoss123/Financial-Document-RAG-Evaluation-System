@@ -25,6 +25,35 @@ def wape(actual, predicted):
     denominator = sum(abs(v) for v in actual)
     return sum(abs(a-p) for a,p in zip(actual,predicted))/denominator if denominator else None
 
+def rolling_validation(values,horizon=28,min_history=56):
+    """Non-overlapping forward test windows; diagnostic, never used for model selection."""
+    if horizon<1 or min_history<28:
+        raise ValueError('Invalid rolling evaluation configuration')
+    folds=[]
+    for origin in range(min_history,len(values)-horizon+1,horizon):
+        actual=values[origin:origin+horizon]
+        folds.append({'train_days':origin,'test_start_index':origin,
+                      'test_end_exclusive':origin+horizon,
+                      'wape':{m:wape(actual,predict(values[:origin],horizon,m))
+                              for m in ('seasonal_naive','trend_weekday')}})
+    return {'horizon_days':horizon,'nonoverlapping_folds':folds,
+            'purpose':'Historical diagnostics; already observed data, not a new independent test'}
+
+def planning_readiness(scores,selected,rolling,max_wape=.20,min_folds=3):
+    """Explicit engineering policy; not a Finance-approved accuracy threshold."""
+    reasons=[]
+    folds=rolling['nonoverlapping_folds']
+    if len(folds)<min_folds:reasons.append('Insufficient non-overlapping evaluation periods')
+    test=scores[selected]['holdout_wape']
+    baseline=scores['seasonal_naive']['holdout_wape']
+    if test is None or test>max_wape:reasons.append('Holdout error exceeds policy or is undefined')
+    if test is not None and baseline is not None and test>baseline:
+        reasons.append('Selected model underperformed seasonal baseline')
+    if any(f['wape'][selected] is None or f['wape'][selected]>max_wape for f in folds):
+        reasons.append('At least one historical period exceeds error policy')
+    return {'ready':not reasons,'reasons':reasons,'max_wape':max_wape,
+            'min_folds':min_folds,'policy_owner':'Engineering default; Finance approval pending'}
+
 def forecast(values, horizon=28):
     if len(values) < 112:
         raise ValueError('112 days required for separate validation and holdout backtests')
@@ -36,7 +65,9 @@ def forecast(values, horizon=28):
             'validation_wape': wape(values[validation_origin:test_origin],predict(values[:validation_origin],28,method)),
             'holdout_wape': wape(values[test_origin:],predict(values[:test_origin],28,method))}
     selected = min(scores,key=lambda m: scores[m]['validation_wape'] if scores[m]['validation_wape'] is not None else math.inf)
+    rolling=rolling_validation(values,horizon)
     return dict(selected=selected, scores=scores, horizon_days=horizon,
+                rolling_validation=rolling,planning_readiness=planning_readiness(scores,selected,rolling),
                 predictions=predict(values,horizon,selected),
                 selection='28-day validation only; following 28-day holdout is not used for selection')
 

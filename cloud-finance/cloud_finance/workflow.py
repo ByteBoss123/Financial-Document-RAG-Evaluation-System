@@ -74,6 +74,9 @@ def execute(report,plan=None):
         else:
             evidence=report['forecast']
             text=(f"Next {evidence['horizon_days']} days: ${sum(evidence['predictions']):,.2f} forecast using {evidence['selected']}. Historical backtests are not a guarantee; this is a point forecast without calibrated intervals." if evidence else 'Insufficient history for a validated forecast.')
+            if evidence and not evidence.get('planning_readiness',{}).get('ready',False):
+                text='EXPERIMENTAL — not cleared for budget planning. '+text
+                text+=' '+ '; '.join(evidence.get('planning_readiness',{}).get('reasons',['Readiness not evaluated']))+'.'
         trace.append({'tool':step,'evidence':evidence,'status':'ok'})
         lines.extend(['',f'## {step.title()}',text+f' [evidence:{step}]'])
     return dict(markdown='\n'.join(lines)+'\n',trace=trace,prompt_version=PROMPT_VERSION,
