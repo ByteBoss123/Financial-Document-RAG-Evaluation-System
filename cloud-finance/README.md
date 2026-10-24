@@ -29,17 +29,22 @@ recorded separately, not averaged into a false whole-period percentile.
 and realized savings unset because attributable cost and business-success labels
 are missing. No running resource was resized or terminated.
 
-33 automated tests pass. Live Snowflake execution, hosted BI deployment,
+44 automated tests pass. Hosted BI deployment,
 verified ownership, Finance sign-off and measured impact remain unverified.
 
 ## Snowflake integration and real-data verification
 
-See [SNOWFLAKE.md](SNOWFLAKE.md) for the transactional real-data loader and the
-dedicated `snowflake_app.py` entrypoint. These replace the earlier SQL-only
-deployment approach. **Live Snowflake execution is pending an account connection.**
-Local mocked connector tests are explicitly not a substitute for that execution.
+See [SNOWFLAKE.md](SNOWFLAKE.md). On 2026-10-24 the pipeline was deployed to a
+Snowflake trial account with a dedicated least-privilege role, and the real AWS
+snapshot (939 service-day rows, 115 days) was loaded through the existing
+`load_snapshot` loader running inside a Snowflake Python procedure. Every row
+matched the source exactly (amount, currency, estimated flag), and totals matched
+across source, table, load audit and reporting snapshot. The remaining live checks
+(failure paths, scheduled-task run, viewer permissions, stored AI recommendations
+and the Streamlit in Snowflake app) are listed as pending in
+[`results/snowflake_verification.json`](results/snowflake_verification.json).
 
-Thirty-three automated tests pass. In addition, the actual AWS data was exercised through
+Forty-four automated tests pass. In addition, the actual AWS data was exercised through
 the authenticated local Streamlit dashboard, QBR generation and persistent batch
 pipeline. Totals matched a separate ungrouped AWS Cost Explorer query within one
 microdollar. See [real-data verification](results/real_data_verification.json).
@@ -65,7 +70,7 @@ below. Server-side billing files are refused unless private mode is enabled.
 - The app runs locally and is covered by Streamlit interaction tests. **This module
   has not been deployed as a hosted enterprise BI application.** The parent
   repository's deployed RAG service is a separate application.
-- The Snowflake SQL is a deployment template, **not an executed Snowflake workload**.
+- Snowflake: objects and the real-data load were executed live (see `results/snowflake_verification.json`); the Streamlit in Snowflake app is not yet deployed.
 
 ## Run
 
