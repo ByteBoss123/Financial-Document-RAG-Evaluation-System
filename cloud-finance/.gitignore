@@ -1,0 +1,6 @@
+private/
+__pycache__/
+.pytest_cache/
+.streamlit/secrets.toml
+.venv/
+*.db

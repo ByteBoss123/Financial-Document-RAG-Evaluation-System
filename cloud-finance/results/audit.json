@@ -1,0 +1,107 @@
+{
+  "markdown": "# Cloud Finance Review: 2026-07-01 to 2026-09-30\nSource: synthetic. Snapshot: 6de1a525812e22b835b510ac900a23542c4e25963be839838ce39444895f482c.\nDraft for human review. USD unblended costs; not an invoice or realized savings report.\nBilling is not marked estimated by the source. Budget is a user-supplied planning assumption.\n\n## Variance\nActual spend: $13,823.17. Budget: $13,000.00; actual minus budget: $823.17. [evidence:variance]\n\n## Drivers\nCompute: $429.05 change; Inference: $186.77 change; Storage: $127.72 change These are accounting contributions, not causal explanations. [evidence:drivers]\n\n## Anomalies\n2 service-days flagged for review. Investigate usage, deployment changes, and resource utilization before recommending changes. No savings have been measured. [evidence:anomalies]\n\n## Forecast\nNext 28 days: $4,180.96 forecast using seasonal_naive. Historical backtests are not a guarantee; this is a point forecast without calibrated intervals. [evidence:forecast]\n",
+  "trace": [
+    {
+      "tool": "variance",
+      "evidence": {
+        "actual": 13823.1693,
+        "budget": 13000.0,
+        "budget_variance": 823.1693,
+        "previous_actual": 13079.6282,
+        "period_delta": 743.5411000000004
+      },
+      "status": "ok"
+    },
+    {
+      "tool": "drivers",
+      "evidence": [
+        {
+          "service": "Compute",
+          "delta": 429.0517
+        },
+        {
+          "service": "Inference",
+          "delta": 186.7693
+        },
+        {
+          "service": "Storage",
+          "delta": 127.7201
+        }
+      ],
+      "status": "ok"
+    },
+    {
+      "tool": "anomalies",
+      "evidence": [
+        {
+          "day": "2026-08-07",
+          "service": "Compute",
+          "actual": 250.3336,
+          "baseline": 83.1533,
+          "excess": 167.1803,
+          "explanation": "Higher than prior same-weekday spending; cause requires engineering review"
+        },
+        {
+          "day": "2026-09-11",
+          "service": "Compute",
+          "actual": 268.2753,
+          "baseline": 87.2035,
+          "excess": 181.0719,
+          "explanation": "Higher than prior same-weekday spending; cause requires engineering review"
+        }
+      ],
+      "status": "ok"
+    },
+    {
+      "tool": "forecast",
+      "evidence": {
+        "selected": "seasonal_naive",
+        "scores": {
+          "seasonal_naive": {
+            "validation_wape": 0.053391118362882954,
+            "holdout_wape": 0.05800235026974265
+          },
+          "trend_weekday": {
+            "validation_wape": 0.0648494827334393,
+            "holdout_wape": 0.06970627110628336
+          }
+        },
+        "horizon_days": 28,
+        "predictions": [
+          165.9817,
+          164.1512,
+          115.8112,
+          115.3467,
+          162.0831,
+          158.8731,
+          162.9925,
+          165.9817,
+          164.1512,
+          115.8112,
+          115.3467,
+          162.0831,
+          158.8731,
+          162.9925,
+          165.9817,
+          164.1512,
+          115.8112,
+          115.3467,
+          162.0831,
+          158.8731,
+          162.9925,
+          165.9817,
+          164.1512,
+          115.8112,
+          115.3467,
+          162.0831,
+          158.8731,
+          162.9925
+        ],
+        "selection": "28-day validation only; following 28-day holdout is not used for selection"
+      },
+      "status": "ok"
+    }
+  ],
+  "prompt_version": "finance-plan-v2",
+  "planner": "deterministic default"
+}
