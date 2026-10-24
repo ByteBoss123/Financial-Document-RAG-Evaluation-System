@@ -82,7 +82,7 @@ below. Server-side billing files are refused unless private mode is enabled.
 - The app runs locally and is covered by Streamlit interaction tests. **This module
   has not been deployed as a hosted enterprise BI application.** The parent
   repository's deployed RAG service is a separate application.
-- Snowflake: pipeline, scheduled refresh and Streamlit in Snowflake app executed live on a trial account (see `results/snowflake_verification.json`).
+- Snowflake: pipeline, scheduled refresh and Streamlit in Snowflake app executed live on a trial account, then redeployed from `sql/deploy/` onto a second trial account on 2026-10-24 (load reconciled, app rendered, viewer-role test passed; failure-path tests not re-run there). See `results/snowflake_verification.json`.
 
 ## Run
 

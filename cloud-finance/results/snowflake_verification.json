@@ -114,5 +114,43 @@
     "holdout_wape_seasonal_naive": 0.0483,
     "planning_ready": false
   },
-  "lifetime": "Trial account was within one day of expiry at deployment; objects stop working when it expires unless upgraded."
+  "lifetime": "Trial account was within one day of expiry at deployment; objects stop working when it expires unless upgraded.",
+  "redeploy_2026_10_24": {
+    "account": "new trial account (region AWS_US_EAST_2), deployed from sql/deploy/01-04 unchanged except the GRANT ROLE target user name",
+    "steps_executed": [
+      "created CLOUDLEDGER_WH (account had no warehouse)",
+      "01_admin.sql: 14/14 statements succeeded",
+      "02_objects.sql: all objects created, REFRESH_REPORTING_DAILY task resumed (CRON 15 7 * * * America/New_York, state started)",
+      "code staged to CODE_STAGE, SHA-256 of all 8 staged files matched local",
+      "03_loader_procedure.sql: LOAD_COST_EXPLORER_SNAPSHOT created",
+      "same private Cost Explorer export loaded via the procedure",
+      "04_streamlit.sql: CLOUDLEDGER_APP created on SYSTEM$WAREHOUSE_RUNTIME, streamlit 1.39.0"
+    ],
+    "data_checks": {
+      "rows": 939,
+      "exact_row_level_match_with_local": true,
+      "duplicate_keys": 0,
+      "source_snapshot_matches_previous_account": true
+    },
+    "app_render": "app opened in Snowsight and rendered with freshness FRESH; QUERY_HISTORY shows the app's queries on FRESHNESS_STATUS, CURRENT_REPORT_DAILY, CURRENT_REPORT_SERVICE_MONTH, CURRENT_SNAPSHOT.SOURCE_SNAPSHOT and AI_RECOMMENDATION_STATUS all SUCCESS",
+    "viewer_role_test": {
+      "role": "CLOUDLEDGER_VIEWER with secondary roles NONE",
+      "read_current_report": "ALLOWED",
+      "read_freshness": "ALLOWED",
+      "read_cost_daily": "DENIED",
+      "read_raw": "DENIED",
+      "insert_cost_daily": "DENIED",
+      "delete_cost_daily": "DENIED",
+      "call_loader": "DENIED",
+      "drop_table": "DENIED",
+      "row_count_after_test_as_CLOUDLEDGER_ROLE": 939
+    },
+    "ai_recommendations": "the 3 recommendations approved by the owner on the previous account were copied with their APPROVED review events and a migration note; they were not regenerated or re-reviewed on this account",
+    "not_re_run_on_this_account": [
+      "forced refresh-failure test",
+      "duplicate/non-USD/missing-day rejection tests",
+      "scheduled task execution (first run due 07:15 America/New_York after deployment)"
+    ],
+    "lifetime": "30-day trial; stops at expiry (around 2026-11-23) unless upgraded"
+  }
 }

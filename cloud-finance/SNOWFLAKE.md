@@ -117,3 +117,6 @@ billing rows (no row-level security). Viewers get no write access to tables.
 - Cortex AI functions are blocked (`399258`).
 - The trial account was one day from expiry at deployment; everything stops when
   it expires unless the account is upgraded. Re-run the steps above on a new account.
+- Redeployed this way on 2026-10-24 to a new trial account (expires around
+  2026-11-23). A fresh trial has no warehouse: create `CLOUDLEDGER_WH` before
+  `01_admin.sql`, and change the `GRANT ROLE ... TO USER` name to the new login.
