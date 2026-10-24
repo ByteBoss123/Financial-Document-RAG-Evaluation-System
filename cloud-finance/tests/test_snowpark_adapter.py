@@ -75,3 +75,14 @@ def test_publish_failure_rolls_back():
     with pytest.raises(RuntimeError):
         load_procedure(s, json.dumps(payload()))
     assert any(c[0] == 'ROLLBACK' for c in s.calls) and not any(c[0] == 'COMMIT' for c in s.calls)
+
+
+def test_reload_in_same_session_replaces_staging_table():
+    # Regression: the live Snowflake rerun failed with "COST_STAGE already exists"
+    # because the temp table persisted in the caller's session.
+    s = FakeSession(Decimal('3.0246913578'), 4)
+    load_procedure(s, json.dumps(payload()))
+    s.total, s.count = Decimal('3.0246913578'), 4
+    load_procedure(s, json.dumps(payload()))
+    creates = [c[0] for c in s.calls if 'COST_STAGE LIKE' in c[0]]
+    assert len(creates) == 2 and all(c.startswith('CREATE OR REPLACE TEMP TABLE') for c in creates)

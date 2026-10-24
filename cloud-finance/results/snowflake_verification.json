@@ -1,6 +1,6 @@
 {
   "account": "Snowflake trial ZHGLXUH-HJ64182 (AWS_US_EAST_2), executed 2026-10-24 via Snowsight",
-  "note": "Only items under 'passed' were executed against the live account. No billing amounts are recorded here; reconciliation is reported as exact-match booleans.",
+  "note": "Only items under 'passed' were executed against the live account. No billing amounts are recorded here; reconciliation is reported as exact-match booleans and hashes.",
   "permissions_inspected": {
     "MCP_ACCESS_ROLE": "USAGE on MCP_DB and sample data only; cannot create schemas; left unchanged",
     "decision": "dedicated CLOUDLEDGER_ROLE (owner) and CLOUDLEDGER_VIEWER (read-only) created by sql/deploy/01_admin.sql"
@@ -8,7 +8,7 @@
   "passed": {
     "admin_setup_01": "14/14 statements succeeded (roles, X-Small warehouse, 5-credit resource monitor, database grants, EXECUTE TASK)",
     "objects_02": "all statements succeeded after one fix (Snowflake Scripting rejects SELECT (subquery),(subquery) INTO; split into two SELECT ... INTO)",
-    "code_stage_upload": "8 files; SHA-256 of every uploaded source matched the local file",
+    "code_stage_upload": "SHA-256 of every uploaded module matched the local file; loader zip contents re-verified after each change",
     "loader_procedure_03": "created after one fix (handler must match procedure arguments exactly; added procedure_handler)",
     "real_data_load": {
       "source": "AWS Cost Explorer GetCostAndUsage, DAILY, UnblendedCost grouped by SERVICE, 2026-07-01 to 2026-10-23 (end exclusive 2026-10-24)",
@@ -28,37 +28,70 @@
       "services": 26,
       "duplicate_grain_rows": 0
     },
-    "reporting_refresh": "REFRESH_REPORTING succeeded; snapshot rows and total reconciled to COST_DAILY; freshness FRESH (lag 1 day)",
-    "ai_analysis_offline": {
-      "model": "us.amazon.nova-lite-v1:0 (Bedrock; Cortex COMPLETE blocked on trial, error 399258)",
+    "idempotent_reload": {
+      "bug_found": "first live rerun failed: temp table COST_STAGE persisted in the caller's session ('already exists'); failure logged, COST_DAILY unchanged",
+      "fix": "CREATE OR REPLACE TEMP TABLE in snowflake_backend.load_snapshot; regression test added",
+      "after_fix": "two consecutive reloads succeeded and reconciled; rows 939, total and snapshot hash unchanged; LOAD_AUDIT +1 row per load (documented behavior)"
+    },
+    "rejections_leave_published_data_unchanged": {
+      "duplicate_grain": "rejected: Duplicate daily account/service grain",
+      "non_usd_currency": "rejected: Mixed or unsupported currency",
+      "missing_whole_day": "rejected: Missing whole billing day",
+      "cost_daily_after_each": "939 rows, total unchanged",
+      "load_failures_logged": true,
+      "raw_payloads_retained": true
+    },
+    "refresh_failure_preserves_snapshot": "REFRESH_REPORTING(force_failure) failed, logged FAILED in REFRESH_LOG, CURRENT_SNAPSHOT unchanged, 0 orphaned report rows; the app showed 'most recent refresh failed, showing last successful snapshot'",
+    "scheduled_task": {
+      "task": "REFRESH_REPORTING_DAILY, CRON 15 7 * * * America/New_York",
+      "first_run": "2026-10-24 07:15 ET SUCCEEDED (TASK_HISTORY and REFRESH_LOG); new snapshot became current; freshness FRESH, lag 1 day",
+      "next_scheduled": "2026-10-25 07:15 ET"
+    },
+    "viewer_role": {
+      "allowed": ["SELECT CURRENT_REPORT_DAILY", "SELECT FRESHNESS_STATUS"],
+      "denied": ["SELECT COST_DAILY", "SELECT RAW_COST_EXPLORER", "INSERT/DELETE COST_DAILY", "UPDATE REPORT_DAILY", "DROP TABLE", "CALL loader", "CALL refresh"],
+      "test_conditions": "USE ROLE CLOUDLEDGER_VIEWER with USE SECONDARY ROLES NONE"
+    },
+    "ai_analysis": {
+      "cortex": "COMPLETE blocked on trial accounts (error 399258); Bedrock used instead",
+      "model": "us.amazon.nova-lite-v1:0",
       "prompt_version": "finance-recs-v1",
-      "evidence": "local mirror of EVIDENCE_SQL over the same 939 rows; Snowflake SQL cross-check pending",
-      "normal_request_runs": 3,
-      "normal_recommendations_passing_checks": "9/9",
-      "prompt_injection_runs": 3,
-      "prompt_injection_result": "3/3 runs rejected by strict JSON-only parser (model refused the injected instruction but added prose); in a diagnostic extraction 1 of 9 drafts was additionally blocked for savings language",
+      "evidence_sql_executed_in_snowflake": true,
+      "snowflake_evidence_equals_independent_local_computation": true,
+      "evaluation_runs": {
+        "normal_requests": 3,
+        "normal_recommendations_passing_checks": "9/9",
+        "prompt_injection_requests": 3,
+        "prompt_injection_outcome": "3/3 rejected by the strict JSON-only parser (model refused the injected instruction but added prose); in a diagnostic extraction 1 of 9 drafts was additionally blocked for savings language"
+      },
+      "checker_fix": "number check treated the digit in 'EC2' as a number; pattern now ignores digits attached to letters; test added",
+      "stored": "3 recommendations in AI_RECOMMENDATIONS with the SQL text and cited rows; all passed checks; all PENDING_REVIEW",
+      "human_review": "Approve/Reject controls render in the deployed app with the viewer's identity; no decision was recorded (left for the owner)",
       "not_checked_automatically": "qualitative wording and implied causes; requires human review"
+    },
+    "streamlit_in_snowflake": {
+      "app": "CLOUDLEDGER.CLOUD_FINANCE_BI.CLOUDLEDGER_APP, owner CLOUDLEDGER_ROLE, warehouse CLOUDLEDGER_WH, USAGE granted to CLOUDLEDGER_VIEWER",
+      "issues_fixed": [
+        "2026_06 bundle: CREATE STREAMLIT without RUNTIME_NAME creates a container-runtime app requiring pyproject.toml and a compute pool; set RUNTIME_NAME = 'SYSTEM$WAREHOUSE_RUNTIME'",
+        "default warehouse-runtime Streamlit lacked st.dataframe(hide_index) so the script stopped after the first tab; pinned streamlit=1.39.0",
+        "QBR cited a hash recomputed from NUMBER(28,10) text; now cites the audited SOURCE_SNAPSHOT"
+      ],
+      "verified_in_browser": ["freshness metrics", "spending trend chart", "service drivers table", "anomalies (0 flags + no-ground-truth caveat)", "forecast evaluation with 'experimental, not cleared' warning and all four reasons", "AI review cards with SQL evidence and review controls", "QBR rendered with download buttons"],
+      "not_exercised": "clicking the QBR download buttons (would save a file on the owner's computer)"
     }
   },
-  "pending": [
-    "idempotent reload of the same snapshot",
-    "duplicate-grain and non-USD payloads rejected with COST_DAILY unchanged and LOAD_FAILURES recorded",
-    "forced refresh failure logged while CURRENT_* keeps the previous snapshot",
-    "scheduled task run (07:15 America/New_York)",
-    "viewer role cannot modify tables",
-    "AI recommendations generated from Snowflake SQL evidence and stored PENDING_REVIEW",
-    "Streamlit in Snowflake app created, opened, and QBR download exercised"
-  ],
   "not_established": [
     "anomaly detection accuracy (no ground-truth labels; 0 flags in the tested period)",
     "realized savings",
     "Finance approval of the forecast error policy",
-    "stakeholder review of AI recommendations"
+    "human review decisions on AI recommendations",
+    "automated AWS ingestion inside Snowflake (no external access integration; loads are submitted from outside)"
   ],
   "forecast_reverified_on_fresh_pull": {
     "selected": "trend_weekday",
     "holdout_wape_selected": 0.2260,
     "holdout_wape_seasonal_naive": 0.0483,
     "planning_ready": false
-  }
+  },
+  "lifetime": "Trial account was within one day of expiry at deployment; objects stop working when it expires unless upgraded."
 }

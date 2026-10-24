@@ -85,7 +85,9 @@ Snowflake Cortex `COMPLETE` is not available on trial accounts (verified error
 existing planner does. Flow (`cloud_finance/ai_review.py`):
 
 1. Run `EVIDENCE_SQL` (E1 28-day service change, E2 monthly totals, E3 top services) in Snowflake.
-2. Send only that evidence to the model with `SYSTEM` (prompt `finance-recs-v1`).
+2. Send only that evidence to the model with `SYSTEM` (prompt `finance-recs-v1`). The Bedrock
+   call runs outside Snowflake (no external access integration on this account), with AWS
+   credentials from the operator's environment.
 3. Parse strictly (JSON only, 1–3 items). Check every draft: cites known evidence ids,
    every number appears in the cited evidence, no savings/delete/purchase language.
 4. Insert into `AI_RECOMMENDATIONS` with evidence SQL results and check results.
@@ -93,6 +95,16 @@ existing planner does. Flow (`cloud_finance/ai_review.py`):
 
 The checks do not judge qualitative wording ("significant", implied causes);
 that is the reviewer's job. No savings are estimated or claimed.
+
+## Streamlit in Snowflake runtime
+
+Since the 2026_06 behavior bundle, `CREATE STREAMLIT` without `RUNTIME_NAME` creates a
+container-runtime app that needs `pyproject.toml` and a compute pool. `04_streamlit.sql`
+selects `RUNTIME_NAME = 'SYSTEM$WAREHOUSE_RUNTIME'`, and `environment.yml` pins
+`streamlit=1.39.0`: the default warehouse-runtime Streamlit lacked
+`st.dataframe(hide_index=...)`, so the script stopped after the first tab. The QBR
+cites the audited `SOURCE_SNAPSHOT`; re-hashing rows read back from `NUMBER(28,10)`
+text gives a different digest for identical values.
 
 ## Cost and access
 

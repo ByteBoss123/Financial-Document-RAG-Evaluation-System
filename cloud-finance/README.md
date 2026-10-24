@@ -29,22 +29,34 @@ recorded separately, not averaged into a false whole-period percentile.
 and realized savings unset because attributable cost and business-success labels
 are missing. No running resource was resized or terminated.
 
-44 automated tests pass. Hosted BI deployment,
+45 automated tests pass. Hosted BI deployment outside Snowflake,
 verified ownership, Finance sign-off and measured impact remain unverified.
 
 ## Snowflake integration and real-data verification
 
-See [SNOWFLAKE.md](SNOWFLAKE.md). On 2026-10-24 the pipeline was deployed to a
-Snowflake trial account with a dedicated least-privilege role, and the real AWS
-snapshot (939 service-day rows, 115 days) was loaded through the existing
-`load_snapshot` loader running inside a Snowflake Python procedure. Every row
-matched the source exactly (amount, currency, estimated flag), and totals matched
-across source, table, load audit and reporting snapshot. The remaining live checks
-(failure paths, scheduled-task run, viewer permissions, stored AI recommendations
-and the Streamlit in Snowflake app) are listed as pending in
-[`results/snowflake_verification.json`](results/snowflake_verification.json).
+See [SNOWFLAKE.md](SNOWFLAKE.md). On 2026-10-24 CloudLedger was deployed to a
+Snowflake trial account with a dedicated least-privilege role and verified live
+([`results/snowflake_verification.json`](results/snowflake_verification.json)):
 
-Forty-four automated tests pass. In addition, the actual AWS data was exercised through
+- Real AWS snapshot (939 service-day rows, 115 days) loaded through the existing
+  `load_snapshot` loader inside a Snowflake Python procedure; every row matched
+  the source exactly, and totals matched across source, table, audit and report.
+- Reloads are data-idempotent; duplicate-grain, non-USD and missing-day payloads
+  are rejected and logged with published data unchanged. A forced refresh failure
+  is logged and the last successful reporting snapshot stays current.
+- The scheduled refresh task ran at 07:15 ET and succeeded; freshness is tracked.
+- A read-only viewer role can read reporting views only.
+- AI recommendations were drafted from SQL evidence run in Snowflake (Bedrock;
+  Cortex is blocked on trial accounts), checked automatically, and stored as
+  `PENDING_REVIEW`. No human decision has been recorded.
+- The Streamlit in Snowflake app renders all six tabs on live data.
+
+Three defects were found and fixed during live testing: a staging temp table that
+blocked same-session reloads, a Streamlit version too old for the app, and a QBR
+hash that did not match the load audit. Anomaly accuracy, realized savings and
+Finance approval of the forecast policy remain unestablished.
+
+Forty-five automated tests pass. In addition, the actual AWS data was exercised through
 the authenticated local Streamlit dashboard, QBR generation and persistent batch
 pipeline. Totals matched a separate ungrouped AWS Cost Explorer query within one
 microdollar. See [real-data verification](results/real_data_verification.json).
@@ -70,7 +82,7 @@ below. Server-side billing files are refused unless private mode is enabled.
 - The app runs locally and is covered by Streamlit interaction tests. **This module
   has not been deployed as a hosted enterprise BI application.** The parent
   repository's deployed RAG service is a separate application.
-- Snowflake: objects and the real-data load were executed live (see `results/snowflake_verification.json`); the Streamlit in Snowflake app is not yet deployed.
+- Snowflake: pipeline, scheduled refresh and Streamlit in Snowflake app executed live on a trial account (see `results/snowflake_verification.json`).
 
 ## Run
 

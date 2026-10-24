@@ -71,6 +71,12 @@ try:
     report = analyze(rows, str(start), str(end), budget, as_of=str(last))
 except ValueError as exc:
     st.error(str(exc)); st.stop()
+# Cite the hash recorded in LOAD_AUDIT at load time. Re-hashing rows read back from
+# NUMBER(28,10) text ("0" -> "0.0000000000") gives a different digest for identical values.
+try:
+    report['source_sha256'] = sql(session, f'SELECT SOURCE_SNAPSHOT FROM {prefix}.CURRENT_SNAPSHOT').iloc[0, 0]
+except Exception:
+    pass
 
 overview, drivers_tab, anomaly_tab, forecast_tab, ai_tab, qbr_tab = st.tabs(
     ['Spending trend', 'Service drivers', 'Anomalies', 'Forecast evaluation', 'AI review', 'QBR'])
@@ -129,10 +135,14 @@ with ai_tab:
     if recs is None or recs.empty:
         st.info('No AI recommendations recorded.')
     else:
-        try:
-            reviewer = st.user.user_name
-        except Exception:
-            reviewer = None
+        reviewer = None
+        for attr in ('user', 'experimental_user'):  # st.user (new) / st.experimental_user (older SiS)
+            try:
+                reviewer = getattr(st, attr).user_name or None
+            except Exception:
+                reviewer = None
+            if reviewer:
+                break
         for r in recs.itertuples():
             with st.container(border=True):
                 st.markdown(f'**{r.REVIEW_STATUS}** · checks {"passed" if r.PASSED_CHECKS else "FAILED"} · '

@@ -40,7 +40,8 @@ def load_snapshot(connection,rows,database,schema):
     try:
         prefix=setup(cursor,database,schema)
         # Stage DDL happens BEFORE BEGIN; Snowflake DDL implicitly commits.
-        cursor.execute(f'CREATE TEMP TABLE {prefix}.COST_STAGE LIKE {prefix}.COST_DAILY')
+        # OR REPLACE: a temp table from an earlier load in the same session must not block a reload.
+        cursor.execute(f'CREATE OR REPLACE TEMP TABLE {prefix}.COST_STAGE LIKE {prefix}.COST_DAILY')
         insert=f'INSERT INTO {prefix}.COST_STAGE VALUES (%s,%s,%s,%s,%s,%s,%s,%s)'
         values=[(r['day'],r['account'],r['service'],r['team'],Decimal(r['amount']),r['currency'],r['estimated'],digest) for r in rows]
         cursor.executemany(insert,values)

@@ -2,6 +2,9 @@ name: sf_env
 channels:
   - snowflake
 dependencies:
+  # Pinned: the warehouse runtime otherwise defaults to an older Streamlit that lacks
+  # st.dataframe(hide_index=...) and st.container(border=...).
+  - streamlit=1.39.0
   - numpy
   - pandas
   - snowflake-snowpark-python
