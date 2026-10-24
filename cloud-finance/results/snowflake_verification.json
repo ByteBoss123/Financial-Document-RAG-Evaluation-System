@@ -23,7 +23,9 @@
       "date_span_days": 115,
       "start_date": "2026-07-01",
       "end_date": "2026-10-23",
-      "currencies": ["USD"],
+      "currencies": [
+        "USD"
+      ],
       "estimated_rows": 269,
       "services": 26,
       "duplicate_grain_rows": 0
@@ -48,8 +50,19 @@
       "next_scheduled": "2026-10-25 07:15 ET"
     },
     "viewer_role": {
-      "allowed": ["SELECT CURRENT_REPORT_DAILY", "SELECT FRESHNESS_STATUS"],
-      "denied": ["SELECT COST_DAILY", "SELECT RAW_COST_EXPLORER", "INSERT/DELETE COST_DAILY", "UPDATE REPORT_DAILY", "DROP TABLE", "CALL loader", "CALL refresh"],
+      "allowed": [
+        "SELECT CURRENT_REPORT_DAILY",
+        "SELECT FRESHNESS_STATUS"
+      ],
+      "denied": [
+        "SELECT COST_DAILY",
+        "SELECT RAW_COST_EXPLORER",
+        "INSERT/DELETE COST_DAILY",
+        "UPDATE REPORT_DAILY",
+        "DROP TABLE",
+        "CALL loader",
+        "CALL refresh"
+      ],
       "test_conditions": "USE ROLE CLOUDLEDGER_VIEWER with USE SECONDARY ROLES NONE"
     },
     "ai_analysis": {
@@ -65,8 +78,8 @@
         "prompt_injection_outcome": "3/3 rejected by the strict JSON-only parser (model refused the injected instruction but added prose); in a diagnostic extraction 1 of 9 drafts was additionally blocked for savings language"
       },
       "checker_fix": "number check treated the digit in 'EC2' as a number; pattern now ignores digits attached to letters; test added",
-      "stored": "3 recommendations in AI_RECOMMENDATIONS with the SQL text and cited rows; all passed checks; all PENDING_REVIEW",
-      "human_review": "Approve/Reject controls render in the deployed app with the viewer's identity; no decision was recorded (left for the owner)",
+      "stored": "3 recommendations in AI_RECOMMENDATIONS with the SQL text and cited rows; all passed checks; all APPROVED for investigation",
+      "human_review": "3/3 APPROVED by the owner (amarnathreddyganta5) on 2026-10-24 via chat instruction; recorded by Claude with a SQL insert into AI_REVIEW_EVENTS (not by clicking the app buttons). Note on each: approved for investigation; cause not established.",
       "not_checked_automatically": "qualitative wording and implied causes; requires human review"
     },
     "streamlit_in_snowflake": {
@@ -76,7 +89,15 @@
         "default warehouse-runtime Streamlit lacked st.dataframe(hide_index) so the script stopped after the first tab; pinned streamlit=1.39.0",
         "QBR cited a hash recomputed from NUMBER(28,10) text; now cites the audited SOURCE_SNAPSHOT"
       ],
-      "verified_in_browser": ["freshness metrics", "spending trend chart", "service drivers table", "anomalies (0 flags + no-ground-truth caveat)", "forecast evaluation with 'experimental, not cleared' warning and all four reasons", "AI review cards with SQL evidence and review controls", "QBR rendered with download buttons"],
+      "verified_in_browser": [
+        "freshness metrics",
+        "spending trend chart",
+        "service drivers table",
+        "anomalies (0 flags + no-ground-truth caveat)",
+        "forecast evaluation with 'experimental, not cleared' warning and all four reasons",
+        "AI review cards with SQL evidence and review controls",
+        "QBR rendered with download buttons"
+      ],
       "not_exercised": "clicking the QBR download buttons (would save a file on the owner's computer)"
     }
   },
@@ -84,12 +105,12 @@
     "anomaly detection accuracy (no ground-truth labels; 0 flags in the tested period)",
     "realized savings",
     "Finance approval of the forecast error policy",
-    "human review decisions on AI recommendations",
+    "outcomes of the approved investigations (no cause or savings measured yet)",
     "automated AWS ingestion inside Snowflake (no external access integration; loads are submitted from outside)"
   ],
   "forecast_reverified_on_fresh_pull": {
     "selected": "trend_weekday",
-    "holdout_wape_selected": 0.2260,
+    "holdout_wape_selected": 0.226,
     "holdout_wape_seasonal_naive": 0.0483,
     "planning_ready": false
   },

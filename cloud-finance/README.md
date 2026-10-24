@@ -48,7 +48,7 @@ Snowflake trial account with a dedicated least-privilege role and verified live
 - A read-only viewer role can read reporting views only.
 - AI recommendations were drafted from SQL evidence run in Snowflake (Bedrock;
   Cortex is blocked on trial accounts), checked automatically, and stored as
-  `PENDING_REVIEW`. No human decision has been recorded.
+  `PENDING_REVIEW`; the owner then approved all three for investigation (cause not established).
 - The Streamlit in Snowflake app renders all six tabs on live data.
 
 Three defects were found and fixed during live testing: a staging temp table that
