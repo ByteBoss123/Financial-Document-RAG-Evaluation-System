@@ -1,67 +1,107 @@
-# Snowflake + Streamlit deployment
+# CloudLedger on Snowflake
 
-Target: actual AWS Cost Explorer data -> Snowflake COST_DAILY -> daily/monthly
-SQL reporting models -> Streamlit and Python forecast evaluation.
+Real AWS Cost Explorer data → Snowflake raw landing → validated, transactional
+`COST_DAILY` snapshot with load audit → atomic reporting snapshots refreshed by a
+scheduled task → Streamlit in Snowflake dashboard (trend, service drivers,
+anomalies, forecast evaluation, AI review, QBR download).
 
-**Status:** implementation prepared and locally tested; no Snowflake connection
-was available in this workspace. Do not claim an executed Snowflake pipeline or
-hosted Streamlit deployment until the live checks below pass.
+Verification status is recorded in
+[`results/snowflake_verification.json`](results/snowflake_verification.json).
+That file lists only what was executed against a live account; anything not
+listed there as passed is untested. No billing records, dollar amounts or
+credentials are committed.
 
-## Load the real-data snapshot
+## Objects
 
-Use your own existing Snowflake database and a **dedicated schema**. The loader
-replaces the complete COST_DAILY snapshot in this schema on each successful run.
-It does not create a database, warehouse or broad role grants. The schema must
-not contain unrelated data under the same table names. One writer per schema.
+| Object | Purpose |
+|---|---|
+| `CLOUDLEDGER_ROLE` | Owns the schema, loader, refresh task and app. Granted to the operator and `SYSADMIN`. |
+| `CLOUDLEDGER_VIEWER` | Read-only: USAGE on DB/schema/warehouse, SELECT on the `CURRENT_*` and `FRESHNESS_STATUS` views. |
+| `CLOUDLEDGER_WH` | X-Small, 60 s auto-suspend, 5-credit monthly resource monitor (suspends at 100%). |
+| `CODE_STAGE` | Code only: `cloud_finance.zip` (loader) and `app/` (Streamlit). |
+| `RAW_COST_EXPLORER` | Every payload submitted to the loader, with SHA-256, time and user. |
+| `COST_DAILY`, `LOAD_AUDIT` | Published snapshot (day × account × service) and one audit row per successful load. |
+| `LOAD_FAILURES` | Rejected loads with the reason. The published snapshot is untouched. |
+| `REPORT_SNAPSHOTS`, `REPORT_DAILY`, `REPORT_SERVICE_MONTH` | Versioned reporting snapshots. A snapshot is registered only after its rows reconcile to the source, in the same transaction. |
+| `CURRENT_REPORT_DAILY`, `CURRENT_REPORT_SERVICE_MONTH` | Always the last *successful* snapshot. |
+| `REFRESH_REPORTING(force_failure, triggered_by)` | Integrity checks (audit reconciliation, duplicate grain, currency), new snapshot, success/failure logged to `REFRESH_LOG`. |
+| `REFRESH_REPORTING_DAILY` | Task, 07:15 America/New_York daily. |
+| `FRESHNESS_STATUS` | Source end date, lag in days, FRESH (≤2 days) / STALE, last load, last refresh success/failure. |
+| `AI_RECOMMENDATIONS`, `AI_REVIEW_EVENTS`, `AI_RECOMMENDATION_STATUS` | Model drafts with SQL evidence and automated checks; append-only human decisions. |
 
-Configure a named connection using Snowflake's local connections.toml or your
-approved secret manager. Never commit passwords, private keys, tokens or billing
-exports. Then run:
+## Deploy (reproducible)
+
+Requires the [Snowflake CLI](https://docs.snowflake.com/en/developer-guide/snowflake-cli/index)
+with a named connection whose credentials live outside the repository.
 
 ```bash
-python -m pip install -r requirements-snowflake.txt
-python -m cloud_finance.snowflake_backend --connection YOUR_CONNECTION \
-  --database YOUR_DATABASE --schema CLOUD_FINANCE_BI \
-  --aws-json private/cost-explorer.json
+cd cloud-finance
+snow sql -c ADMIN_CONN -f sql/deploy/01_admin.sql        # ACCOUNTADMIN, once
+snow sql -c PROJECT_CONN -f sql/deploy/02_objects.sql    # CLOUDLEDGER_ROLE
+
+# Loader package: the procedure imports cloud_finance/ from this zip
+mkdir -p build && rm -f build/cloud_finance.zip && zip build/cloud_finance.zip \
+  cloud_finance/__init__.py cloud_finance/data.py cloud_finance/snowflake_backend.py cloud_finance/snowpark_adapter.py
+snow stage copy build/cloud_finance.zip @CLOUDLEDGER.CLOUD_FINANCE_BI.CODE_STAGE --overwrite -c PROJECT_CONN
+for f in __init__ data analytics workflow snowflake_backend; do
+  snow stage copy cloud_finance/$f.py @CLOUDLEDGER.CLOUD_FINANCE_BI.CODE_STAGE/app/cloud_finance/ --overwrite -c PROJECT_CONN
+done
+snow stage copy snowflake_app.py @CLOUDLEDGER.CLOUD_FINANCE_BI.CODE_STAGE/app/ --overwrite -c PROJECT_CONN
+snow stage copy environment.yml @CLOUDLEDGER.CLOUD_FINANCE_BI.CODE_STAGE/app/ --overwrite -c PROJECT_CONN
+
+snow sql -c PROJECT_CONN -f sql/deploy/03_loader_procedure.sql
+snow sql -c PROJECT_CONN -f sql/deploy/04_streamlit.sql
 ```
 
-The loader validates source grain/currency/completeness, preserves decimal
-precision, checks staging row count and source total, and only then replaces
-the published data and records an audit row in a DML transaction. Failed staging
-does not touch the published snapshot; failed publication rolls back. DDL occurs
-before BEGIN because Snowflake DDL implicitly commits. An unchanged reload is
-data-idempotent but adds another audit entry. Concurrent writers are not supported.
+During the verified deployment, the files were written to the stage with
+Snowpark `session.file.put_stream` from Snowsight; the CLI commands above
+are the equivalent path and were not themselves executed.
 
-## Streamlit
+## Load real billing data
 
-Create a Streamlit app in Snowsight using an existing warehouse. Upload
-`snowflake_app.py` and the `cloud_finance` package; select that entrypoint and make
-NumPy, pandas and snowflake-snowpark-python available. Enter your database/schema
-in the sidebar. The app uses `st.connection("snowflake")`; locally, configure the
-corresponding Streamlit connection and run `streamlit run snowflake_app.py`.
+```bash
+python -m cloud_finance.import_aws --start 2026-07-01    # writes private/cost-explorer.json (gitignored)
+python -m cloud_finance.load_via_procedure --connection PROJECT_CONN
+```
 
-Use a least-privilege app owner role with SELECT/USAGE on only the reporting
-schema and warehouse. In owner-rights deployments, only share with viewers
-authorized for the full underlying billing data. This app does not implement
-per-user row security. Keep warehouses small with auto-suspend configured by
-your account administrator. Compute consumption is billed by Snowflake.
+The procedure wraps `snowflake_backend.load_snapshot` (the same loader used by
+`python -m cloud_finance.snowflake_backend`) through `snowpark_adapter.py`. It
+stores the raw payload, validates grain/currency/whole-day coverage, stages
+with exact decimal binding, reconciles staged row count and total against the
+source, then replaces `COST_DAILY` and writes `LOAD_AUDIT` in one transaction.
+Any failure is written to `LOAD_FAILURES` and the published snapshot is unchanged.
 
-No demo fallback exists in this entrypoint: an unavailable connection or table
-shows an error. No assumed budget is supplied for real records. AWS credits and
-estimated charges remain visible. Forecasts run in Python using Snowflake-loaded
-history; daily/monthly reporting aggregations run in Snowflake SQL.
+**Ingestion boundary:** Snowflake does not call AWS. The scheduled task refreshes
+and checks what has been loaded, and `FRESHNESS_STATUS` turns STALE when no new
+export has arrived for more than two days. Automating the AWS pull needs either an
+external scheduler running `import_aws` + the loader, or a Snowflake external
+access integration with AWS credentials (not configured; not available to this
+trial account's setup).
 
-## Live acceptance checks (pending connection)
+## AI-assisted analysis
 
-1. Run the loader and confirm its source reconciliation result.
-2. Independently compare `SUM(UNBLENDED_COST)` and row counts against the AWS export.
-3. Rerun the same snapshot: row count and totals must remain unchanged.
-4. Upload a duplicate-grain snapshot: it must fail before modifying COST_DAILY.
-5. Open the Streamlit app, inspect charts, choose dates, and generate the QBR.
-6. Verify a read-only viewer cannot modify tables and cannot see unauthorized data.
+Snowflake Cortex `COMPLETE` is not available on trial accounts (verified error
+399258), so drafting uses Amazon Bedrock (`us.amazon.nova-lite-v1:0`), as the
+existing planner does. Flow (`cloud_finance/ai_review.py`):
 
-Local mocked connector tests verify client control flow, not Snowflake SQL
-execution, permissions, connector compatibility or a deployed app.
+1. Run `EVIDENCE_SQL` (E1 28-day service change, E2 monthly totals, E3 top services) in Snowflake.
+2. Send only that evidence to the model with `SYSTEM` (prompt `finance-recs-v1`).
+3. Parse strictly (JSON only, 1–3 items). Check every draft: cites known evidence ids,
+   every number appears in the cited evidence, no savings/delete/purchase language.
+4. Insert into `AI_RECOMMENDATIONS` with evidence SQL results and check results.
+   Status is `PENDING_REVIEW` until a reviewer approves or rejects in the app.
 
-References: https://docs.snowflake.com/en/developer-guide/python-connector/python-connector-api
-and https://docs.streamlit.io/develop/api-reference/connections/st.connections.snowflakeconnection
+The checks do not judge qualitative wording ("significant", implied causes);
+that is the reviewer's job. No savings are estimated or claimed.
+
+## Cost and access
+
+Compute is X-Small with 60 s auto-suspend and a 5-credit cap. The Streamlit app
+runs with owner's rights; share it only with people allowed to see all loaded
+billing rows (no row-level security). Viewers get no write access to tables.
+
+## Trial-account limits found during deployment
+
+- Cortex AI functions are blocked (`399258`).
+- The trial account was one day from expiry at deployment; everything stops when
+  it expires unless the account is upgraded. Re-run the steps above on a new account.

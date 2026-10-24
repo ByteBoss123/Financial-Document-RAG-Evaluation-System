@@ -1,3 +1,4 @@
+-- SUPERSEDED: see sql/deploy/ (01_admin, 02_objects, 03_loader_procedure, 04_streamlit).
 -- Deployment template, not executed against a Snowflake account.
 -- Operate in a dedicated database/schema selected by the operator.
 CREATE TABLE IF NOT EXISTS COST_DAILY (

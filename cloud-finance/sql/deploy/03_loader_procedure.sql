@@ -7,5 +7,5 @@ CREATE OR REPLACE PROCEDURE LOAD_COST_EXPLORER_SNAPSHOT(PAYLOAD VARCHAR)
   LANGUAGE PYTHON RUNTIME_VERSION = '3.11'
   PACKAGES = ('snowflake-snowpark-python')
   IMPORTS = ('@CLOUDLEDGER.CLOUD_FINANCE_BI.CODE_STAGE/cloud_finance.zip')
-  HANDLER = 'cloud_finance.snowpark_adapter.load_procedure'
+  HANDLER = 'cloud_finance.snowpark_adapter.procedure_handler'
   EXECUTE AS CALLER;

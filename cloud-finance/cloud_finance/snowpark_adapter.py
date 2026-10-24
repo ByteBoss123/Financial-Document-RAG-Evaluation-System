@@ -72,3 +72,9 @@ def load_procedure(session, payload, database='CLOUDLEDGER', schema='CLOUD_FINAN
         session.sql(f'INSERT INTO {prefix}.LOAD_FAILURES (PAYLOAD_SHA256, ERROR_MESSAGE) '
                     'VALUES (?, ?)', params=[digest, f'{type(exc).__name__}: {exc}'[:4000]]).collect()
         raise
+
+
+def procedure_handler(session, payload):
+    """Handler for LOAD_COST_EXPLORER_SNAPSHOT(PAYLOAD VARCHAR); Snowflake requires
+    the handler signature to match the procedure arguments exactly."""
+    return load_procedure(session, payload)

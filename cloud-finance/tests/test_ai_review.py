@@ -26,3 +26,7 @@ def test_parse_rejects_bad_shapes():
 def test_queries_are_schema_qualified():
     q = evidence_queries('CLOUDLEDGER.CLOUD_FINANCE_BI')
     assert all('CLOUDLEDGER.CLOUD_FINANCE_BI.COST_DAILY' in v for v in q.values())
+
+def test_service_names_with_digits_are_not_numbers():
+    r = check({'text': 'Review Amazon EC2 and S3 usage; S3 rose by 10.34 USD over 28 days.', 'evidence_ids': ['E1_service_change_28d']}, EV)
+    assert r['passed'], r

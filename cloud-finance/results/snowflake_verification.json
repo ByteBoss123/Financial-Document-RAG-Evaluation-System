@@ -1,0 +1,64 @@
+{
+  "account": "Snowflake trial ZHGLXUH-HJ64182 (AWS_US_EAST_2), executed 2026-10-24 via Snowsight",
+  "note": "Only items under 'passed' were executed against the live account. No billing amounts are recorded here; reconciliation is reported as exact-match booleans.",
+  "permissions_inspected": {
+    "MCP_ACCESS_ROLE": "USAGE on MCP_DB and sample data only; cannot create schemas; left unchanged",
+    "decision": "dedicated CLOUDLEDGER_ROLE (owner) and CLOUDLEDGER_VIEWER (read-only) created by sql/deploy/01_admin.sql"
+  },
+  "passed": {
+    "admin_setup_01": "14/14 statements succeeded (roles, X-Small warehouse, 5-credit resource monitor, database grants, EXECUTE TASK)",
+    "objects_02": "all statements succeeded after one fix (Snowflake Scripting rejects SELECT (subquery),(subquery) INTO; split into two SELECT ... INTO)",
+    "code_stage_upload": "8 files; SHA-256 of every uploaded source matched the local file",
+    "loader_procedure_03": "created after one fix (handler must match procedure arguments exactly; added procedure_handler)",
+    "real_data_load": {
+      "source": "AWS Cost Explorer GetCostAndUsage, DAILY, UnblendedCost grouped by SERVICE, 2026-07-01 to 2026-10-23 (end exclusive 2026-10-24)",
+      "payload_sha256": "aa0cb379394f0babe717b99b749b2ae17f7e44102ee3b2e355cf9b76982d8764",
+      "normalized_snapshot_sha256": "b14982de05fc83bc83a613d15324ee72c1aca61940bab7a507f529a12db22c6d",
+      "rows_source": 939,
+      "rows_loaded": 939,
+      "row_level_exact_match": true,
+      "row_level_match_definition": "every (usage_date, service) amount as exact decimal, currency and estimated flag equal between payload and COST_DAILY",
+      "total_exact_match_source_vs_table_vs_audit_vs_reporting_snapshot": true,
+      "distinct_days": 115,
+      "date_span_days": 115,
+      "start_date": "2026-07-01",
+      "end_date": "2026-10-23",
+      "currencies": ["USD"],
+      "estimated_rows": 269,
+      "services": 26,
+      "duplicate_grain_rows": 0
+    },
+    "reporting_refresh": "REFRESH_REPORTING succeeded; snapshot rows and total reconciled to COST_DAILY; freshness FRESH (lag 1 day)",
+    "ai_analysis_offline": {
+      "model": "us.amazon.nova-lite-v1:0 (Bedrock; Cortex COMPLETE blocked on trial, error 399258)",
+      "prompt_version": "finance-recs-v1",
+      "evidence": "local mirror of EVIDENCE_SQL over the same 939 rows; Snowflake SQL cross-check pending",
+      "normal_request_runs": 3,
+      "normal_recommendations_passing_checks": "9/9",
+      "prompt_injection_runs": 3,
+      "prompt_injection_result": "3/3 runs rejected by strict JSON-only parser (model refused the injected instruction but added prose); in a diagnostic extraction 1 of 9 drafts was additionally blocked for savings language",
+      "not_checked_automatically": "qualitative wording and implied causes; requires human review"
+    }
+  },
+  "pending": [
+    "idempotent reload of the same snapshot",
+    "duplicate-grain and non-USD payloads rejected with COST_DAILY unchanged and LOAD_FAILURES recorded",
+    "forced refresh failure logged while CURRENT_* keeps the previous snapshot",
+    "scheduled task run (07:15 America/New_York)",
+    "viewer role cannot modify tables",
+    "AI recommendations generated from Snowflake SQL evidence and stored PENDING_REVIEW",
+    "Streamlit in Snowflake app created, opened, and QBR download exercised"
+  ],
+  "not_established": [
+    "anomaly detection accuracy (no ground-truth labels; 0 flags in the tested period)",
+    "realized savings",
+    "Finance approval of the forecast error policy",
+    "stakeholder review of AI recommendations"
+  ],
+  "forecast_reverified_on_fresh_pull": {
+    "selected": "trend_weekday",
+    "holdout_wape_selected": 0.2260,
+    "holdout_wape_seasonal_naive": 0.0483,
+    "planning_ready": false
+  }
+}
