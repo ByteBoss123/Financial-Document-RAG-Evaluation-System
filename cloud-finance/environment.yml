@@ -1,0 +1,7 @@
+name: sf_env
+channels:
+  - snowflake
+dependencies:
+  - numpy
+  - pandas
+  - snowflake-snowpark-python
