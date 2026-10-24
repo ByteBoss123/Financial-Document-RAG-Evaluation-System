@@ -1,0 +1,30 @@
+{
+  "source": "Actual AWS Cost Explorer",
+  "rows": 939,
+  "days": 115,
+  "date_start": "2026-07-01",
+  "date_end": "2026-10-23",
+  "source_to_sql_exact": true,
+  "independent_aws_total_reconciled_within_one_microdollar": true,
+  "real_data_streamlit_access_gate_and_qbr_passed": true,
+  "assumed_budget_disabled": true,
+  "pipeline_publish_and_health_passed": true,
+  "period_driver_reconciliation_passed": true,
+  "flagged_service_days": 0,
+  "forecast": {
+    "seasonal_naive": {
+      "validation_wape": 0.7193714838246613,
+      "holdout_wape": 0.0483382539414967
+    },
+    "trend_weekday": {
+      "validation_wape": 0.7030530110783808,
+      "holdout_wape": 0.22602610561505967
+    }
+  },
+  "selected_model": "trend_weekday",
+  "limitations": [
+    "Anomalies have no real-world ground-truth labels",
+    "Estimated AWS billing may change",
+    "Snowflake not executed: no account connection available"
+  ]
+}

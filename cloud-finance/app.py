@@ -1,9 +1,10 @@
 import json
 import os
 from datetime import date,timedelta
+from pathlib import Path
 import pandas as pd
 import streamlit as st
-from cloud_finance.data import demo,from_cost_explorer
+from cloud_finance.data import demo,from_cost_explorer,validate
 from cloud_finance.analytics import analyze
 from cloud_finance.workflow import execute,plan_with_bedrock
 from cloud_finance.auth import verify_password
@@ -20,18 +21,24 @@ st.title('Cloud Finance Intelligence')
 st.caption('Product Finance / spend planning and investigation')
 st.sidebar.header('Analysis controls')
 upload=st.sidebar.file_uploader('AWS Cost Explorer JSON (SERVICE / DAILY)',type=['json'])
+private_path=os.getenv('FINANCE_DATA_PATH','')
+if private_path and os.getenv('FINANCE_PRIVATE_MODE')!='1':
+    st.error('Server-side billing files require private mode. Access denied.'); st.stop()
+real_source=bool(upload or private_path)
 try:
-    rows=from_cost_explorer(json.load(upload)) if upload else demo()
-except (ValueError,KeyError,TypeError) as exc:
+    rows=(from_cost_explorer(json.load(upload)) if upload else
+          from_cost_explorer(json.loads(Path(private_path).read_text())) if private_path else demo())
+    validate(rows)
+except (ValueError,KeyError,TypeError,OSError) as exc:
     st.error('Invalid billing export: '+str(exc)); st.stop()
-if not upload:
+if not real_source:
     st.info('Synthetic portfolio demo — generated billing, assumed budgets, no realized savings.')
 else:
     st.info('Uploaded billing remains in this session. No model is called unless you request an AI plan.')
 first,last=date.fromisoformat(min(r['day'] for r in rows)),date.fromisoformat(max(r['day'] for r in rows))
 start=st.sidebar.date_input('Period start',max(first,last-timedelta(days=89)),min_value=first,max_value=last)
 end=st.sidebar.date_input('Period end',last,min_value=first,max_value=last)
-use_budget=st.sidebar.checkbox('Supply a planning budget',value=not bool(upload))
+use_budget=st.sidebar.checkbox('Supply a planning budget',value=not real_source)
 budget=st.sidebar.number_input('Period budget (USD)',min_value=1.0,value=13000.0,step=100.0) if use_budget else None
 try:
     report=analyze(rows,start.isoformat(),end.isoformat(),budget)
@@ -55,6 +62,10 @@ with forecast:
     if f:
         st.write('Selected on validation:',f['selected'])
         st.dataframe(pd.DataFrame(f['scores']).T.style.format('{:.2%}'))
+        chosen=f['scores'][f['selected']]['holdout_wape']
+        baseline=f['scores']['seasonal_naive']['holdout_wape']
+        if chosen is not None and baseline is not None and chosen>baseline:
+            st.warning('Selected model underperformed the seasonal baseline on holdout. Review before using for planning.')
         future=pd.DataFrame({'day':[end+timedelta(days=i+1) for i in range(f['horizon_days'])],'forecast':f['predictions']})
         st.line_chart(future.set_index('day'))
         st.caption('28-day validation followed by a separate 28-day holdout. No calibrated prediction intervals. Net costs with credits can be negative; this nonnegative forecast models spending, so inspect credit-heavy periods separately.')

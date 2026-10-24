@@ -4,6 +4,25 @@ A working Product Finance portfolio module: Python/SQL cost reporting, Streamlit
 budget variance, service-level change contributions, forecast backtests, anomaly
 investigation, and a bounded Amazon Bedrock planner for QBR workflows.
 
+## Snowflake integration and real-data verification
+
+See [SNOWFLAKE.md](SNOWFLAKE.md) for the transactional real-data loader and the
+dedicated `snowflake_app.py` entrypoint. These replace the earlier SQL-only
+deployment approach. **Live Snowflake execution is pending an account connection.**
+Local mocked connector tests are explicitly not a substitute for that execution.
+
+Thirty automated tests pass. In addition, the actual AWS data was exercised through
+the authenticated local Streamlit dashboard, QBR generation and persistent batch
+pipeline. Totals matched a separate ungrouped AWS Cost Explorer query within one
+microdollar. See [real-data verification](results/real_data_verification.json).
+For the tested September 24–October 23 period, the detector produced no flags;
+this does not establish recall because real anomalies have no ground-truth labels.
+The UI now warns when the chosen forecast underperforms its baseline.
+
+To load a private local export directly in the dashboard, configure
+`FINANCE_DATA_PATH` with its path and enable the private access gate described
+below. Server-side billing files are refused unless private mode is enabled.
+
 ## Evidence and honest scope
 
 - The public demo generates 1,095 service-day records over 365 days with fictional

@@ -1,6 +1,6 @@
 {
   "verified_on": "2026-10-24",
-  "automated_tests_passed": 25,
+  "automated_tests_passed": 30,
   "streamlit_interaction_tested": true,
   "real_billing_import": {
     "source": "AWS Cost Explorer daily UnblendedCost grouped by SERVICE",
@@ -12,6 +12,6 @@
     "real_cost_data_committed": false
   },
   "deployment": "Local Streamlit tested; hosted deployment not completed",
-  "snowflake": "SQL template only; not executed",
+  "snowflake": "Transactional loader and Streamlit entrypoint implemented; local mocked tests passed; live execution blocked by missing account connection",
   "stakeholder_review": "Not yet performed"
 }
