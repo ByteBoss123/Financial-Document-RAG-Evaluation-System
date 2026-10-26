@@ -9,12 +9,21 @@ failure mode, structured request logging, and a monitoring dashboard that
 surfaces failure rate over time instead of hiding it inside a single
 "looks fine" demo run.
 
+## Evidence scope
+
+Deployment results below are historical snapshots, not a current uptime check.
+The p50/p95 latency numbers cover only 20 requests; they do not demonstrate
+throughput or sustained production reliability. The 96% to 3% false-alarm result
+is specifically the restated TAT-QA stress-test variant, and 98.4% detection is
+for injected +10% figure errors, not all naturally occurring hallucinations.
+Lambda `/tmp` logs are ephemeral; durable telemetry remains future work.
+
 ## Results at a glance
 
 | Area | Result | Evidence |
 |---|---|---|
 | Live service | AWS Lambda + API Gateway + Bedrock (Llama 3.3 70B); right-company answers 16 -> 20 of 20 after fixing a silently dropped filer | `results/live_lambda_v2.json` |
-| Detector false alarms, held out | 96% -> 3% on 1,052 TAT-QA answers, still catching 98.4% of injected wrong figures | `results/heldout_tatqa_*.json` |
+| Detector false alarms, held out | 96% -> 3% on 1,052 restated TAT-QA stress-test answers, still catching 98.4% of injected wrong figures | `results/heldout_tatqa_*.json` |
 | Detector false alarms, live | 7 of 10 -> 0 of 20 Llama answers | `results/live_lambda_v2.json` |
 | Infrastructure automation | One-command build, deploy, smoke test, automatic rollback; rollback drill 29 s, 5/5 smoke checks | `infra/redeploy.py`, `results/redeploy_drill.json` |
 | Tests | 24 pytest tests, including a regression test for every real-filing bug | `tests/` |
@@ -162,7 +171,7 @@ with Amazon Bedrock when `BEDROCK_GENERATION_MODEL_ID` is set (no API key; uses 
 ## Setup
 
 ```bash
-pip install -r requirements.txt
+python -m pip install -r requirements-dev.txt
 
 # SEC requires a descriptive User-Agent on every request (their fair-use policy)
 export EDGAR_USER_AGENT="Your Name your@email.com FinDocQA project"
@@ -244,3 +253,4 @@ education-focused retrieval and abstention experiment. It includes 12 authored n
 12 development questions, 24 test questions, measured failure cases and five tests.
 It demonstrates why a relevant source is not necessarily sufficient evidence to answer.
 This is a small synthetic prototype, not a student deployment or learning-outcome study.
+
