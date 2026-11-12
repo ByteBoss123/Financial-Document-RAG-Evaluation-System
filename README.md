@@ -254,3 +254,7 @@ education-focused retrieval and abstention experiment. It includes 12 authored n
 It demonstrates why a relevant source is not necessarily sufficient evidence to answer.
 This is a small synthetic prototype, not a student deployment or learning-outcome study.
 
+
+## License
+
+Code in this repository is released under the MIT License (see `LICENSE`). Datasets and third-party files are not covered by this license and remain under their original sources' terms.
