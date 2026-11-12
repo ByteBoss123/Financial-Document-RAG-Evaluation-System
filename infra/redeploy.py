@@ -12,6 +12,7 @@ lambda:GetFunction/UpdateFunctionCode/GetFunctionConfiguration/InvokeFunction.
 """
 import argparse
 import json
+import os
 import re
 import sys
 import time
@@ -21,7 +22,9 @@ import boto3
 REGION = "us-east-1"
 FUNCTION = "findocqa-FinDocQAFunction-cV7MZUoWpdyH"
 PROJECT = "findocqa-build"
-REPO_URI = "331604528033.dkr.ecr.us-east-1.amazonaws.com/findocqac4d0723d/findocqafunction00622456repo"
+# Set FINDOCQA_ECR_REPO_URI to your ECR repository URI, e.g.
+# <account-id>.dkr.ecr.us-east-1.amazonaws.com/<repo-name>
+REPO_URI = os.environ.get("FINDOCQA_ECR_REPO_URI", "")
 SMOKE = [
     ("How many employees does Morgan Stanley have?", "MORGAN STANLEY"),
     ("What were JPMorgan Chase's total net revenues for 2025?", "JPMORGAN"),
@@ -43,6 +46,8 @@ def build(cb, logs):
     ev = logs.get_log_events(logGroupName=b["logs"]["groupName"], logStreamName=b["logs"]["streamName"],
                              startFromHead=False, limit=200)["events"]
     digest = next(m.group(1) for e in reversed(ev) if (m := re.search(r"digest: (sha256:[0-9a-f]+)", e["message"])))
+    if not REPO_URI:
+        raise SystemExit("Set FINDOCQA_ECR_REPO_URI before running redeploy.py")
     return f"{REPO_URI}@{digest}"
 
 
